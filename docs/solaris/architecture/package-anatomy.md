@@ -69,8 +69,9 @@ config:
 See [Package registry](../package-registry.md) for Composer names, PHP namespaces, owner
 terms, and environment-specific source lookup.
 
-**Inside a package, its own files import via its own alias, not a relative path**, and imports from
-an ancestor package use that ancestor's alias:
+Use aliases for reusable modules and package boundaries. Relative imports are allowed between tightly
+coupled sibling Page files, such as `page-index.js` importing `./page`. Imports from an ancestor package
+must use that ancestor's alias:
 
 ```js
 // inside core

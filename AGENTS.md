@@ -7,6 +7,17 @@ Solaris is a Laravel package starter kit: a backend architecture plus a frontend
 as layered Composer packages. It is not a new framework — it runs on Laravel and follows Laravel
 conventions.
 
+## Compatibility
+
+This documentation bundle is validated and synchronized with the latest Solaris Laravel Core source:
+
+| Package | Version | Last synchronized |
+|---|---:|---|
+| `solaris/solaris-laravel-core` | `1.6.5` | 2026-09-09 |
+
+Treat `1.6.5` as the latest validated Core contract for this bundle. When Core is upgraded, review
+breaking UI/runtime contracts and update this metadata together with the affected guides.
+
 **Read [Context](docs/solaris/context.md) first**, then
 [Package registry](docs/solaris/package-registry.md), to identify context and resolve package owners.
 Then read only the files this index points to for the work at hand. Documentation links are relative;

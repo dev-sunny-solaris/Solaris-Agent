@@ -20,6 +20,7 @@ actually uses that feature.
 | Inline-editable list | [SolarPage](solar-page.md), [SolarListPage](solar-list-page.md) | [Table](../components/table.md), [DataGrid](../components/datagrid.md) |
 | Standard create/edit Page | [SolarPage](solar-page.md), [SolarEditPage](solar-edit-page.md) | [Form](../components/form/form.md), then only Components used by the view |
 | Create/edit Page with list details | [SolarPage](solar-page.md), [SolarListPage](solar-list-page.md), [SolarEditPage](solar-edit-page.md), [SolarListDetail](solar-list-detail.md) | [Form](../components/form/form.md), [Table](../components/table.md); [ModalForm](../components/modal-form.md) only when used |
+| Page-level controller for an existing ModalForm | [SolarPage](solar-page.md), [SolarModalPage](solar-modal-page.md) | [ModalForm](../components/modal-form.md) |
 
 If scope changes during implementation—for example, a normal Table becomes `mode="grid"`—load the
 newly required guide before editing code.
@@ -44,6 +45,6 @@ Sandbox-owned and project-owned Page assets follow the same project-level resolu
 | `SolarListPage` | Screens with one primary list Table |
 | `SolarEditPage` | Standard create/edit screens |
 | `SolarListDetail` | List-detail behavior inside its parent Page flow |
-| `SolarModalPage` | Reserved; do not select until its dedicated guide is documented |
+| `SolarModalPage` | Page-level behavior around an existing ModalForm |
 
 Never select a base by filename alone. Select it from the screen's interaction contract.

@@ -203,6 +203,7 @@ Consequences:
 - Initialization values should be set silently: `field.set(value, true)`.
 - Components without a supported `change` event are not tracked automatically.
 - Programmatic mutations that do not emit `change` do not mark the Page dirty.
+- Fields added after dirty tracking initializes are not tracked automatically.
 - `discard()` is an empty extension point; overriding it does not automatically connect it to a
   standard button. Implement both invocation and reset behavior when needed.
 
@@ -213,8 +214,11 @@ Consequences:
 skip detail refresh.
 
 Use `refreshDetail(name)` for a specific registered detail by registration name or generated property
-name. Treat all-detail refresh as fire-and-join behavior in current Core: the method starts
-`Promise.all(details)` but does not return/await it.
+name. Refreshing all details waits for every detail refresh to finish.
+
+When `save=false`, no `_save` Button exists; another control must call `save()`. The standard Refresh
+Button is temporarily disabled and re-enabled after two seconds. Cancel behavior belongs to the Cancel
+Button/navigation contract and is separate from the empty `discard()` hook.
 
 ## Profile panel
 

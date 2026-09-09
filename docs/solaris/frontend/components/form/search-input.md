@@ -12,11 +12,12 @@ search icon, and after reset; reset emits a `null`/empty value. `show()` and `hi
 not only the input.
 
 ```blade
-<x-core::search-input id="search" ignore />
+<x-core::search-input id="search" />
 ```
 
 ```js
-this.form.get("search").on("search", value => this.reload(value))
+this.form.get('search').on('search', value => this.reload(value), 'SearchFilter')
 ```
 
-Use `ignore` when search filters UI and must not enter a submit payload.
+Use `form.exclude('search')` when a Form-owned search must stay out of submit data. If `ignore` is
+rendered, Form and global SolarUI do not register it; do not retrieve it through `this.form.get()`.

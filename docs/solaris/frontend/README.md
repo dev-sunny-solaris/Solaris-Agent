@@ -1,6 +1,6 @@
 # Frontend Layer (SolarUI)
 
-SolarUI is a Blade-first component system on Bootstrap 5. Components render HTML with data
+SolarUI is a Blade-first component system on Bootstrap 5. Components render HTML with declarative DOM
 attributes; JS auto-initializes from those attributes. **There is no reactive server round-trip —
 it is not Livewire, and Solaris deliberately has no Livewire/Alpine layer. PHP is PHP, JS is JS.**
 
@@ -21,12 +21,36 @@ reading or writing implementation code:
 A Page may use many Components. Do not move page-specific orchestration into a reusable Component,
 and do not reimplement an existing Component inside a Page.
 
+## Solaris way
+
+Choose the least-custom layer that satisfies the interaction:
+
+```text
+existing Blade prop or slot
+→ existing Component public API
+→ existing Component event
+→ Page hook or orchestration
+→ plain Bootstrap behavior
+→ reusable custom Component
+→ direct DOM manipulation as the last resort
+```
+
+Blade owns structure, identity, initial state, and declarative configuration. Components own reusable
+behavior. Pages coordinate Components. Keep standard Table, ModalForm, and Form behavior unless the task
+requires a real replacement; empty overrides disable useful defaults.
+
+Required conventions: [Blade](blade.md), [JavaScript](javascript.md), [Events](events.md), and
+[Ownership and lazy semantics](ownership-lazy.md).
+
 ## Component runtime
 
 Core's `app.js` constructs one `SolarUI`, publishes it through `SolarSingleton`, and calls
 `init()`. `SolarUI` holds a **static** registry of `{ selector, component, guard, factory }`
 entries; `init()` queries each selector and instantiates the matching class through `SolarFactory`,
 destroying the previous instances first on a re-init.
+
+ModalForm compositions are created at the end of `SolarUI.init()`, after their nested Modal and Form
+instances exist. Page code may resolve `<modal-id>_ModalForm` only after this initialization.
 
 ```js
 SolarUI.register(selector, ComponentClass, guard = null, factory = null)
@@ -48,7 +72,7 @@ When adding an auto-initialized DOM component:
 1. Extend `SolarComponent`.
 2. Register it — in core, add it to `_registerDefaultComponents()`; elsewhere, call
    `SolarUI.register()` from an entry file that loads before `init()`.
-3. Ship a matching Blade component that renders the selector and the data attributes it reads.
+3. Ship matching Blade that renders the selector and declarative attributes it reads.
 
 Page JS (`resources/js/pages/<module>/…`) is loaded per screen and is not registered as a Component.
 The reusable Page class is exported from its module; the Blade-selected entry imports it and executes
@@ -81,7 +105,16 @@ Blade renders DOM contracts
 ```
 
 `ModalForm` is a reusable Component composition. `SolarModalPage` is Page-level orchestration hosted in
-a modal flow; use it only after its dedicated Page guide is available.
+a modal flow; read its dedicated Page guide before using it.
+
+## Re-initialization and dynamic DOM
+
+Do not call `solarUI.init()` merely to initialize one inserted fragment. A second call destroys and
+recreates every registered instance, making Page references and Page-installed listeners stale. Prefer
+Blade-rendered Components, a Component's own render/add API, or explicitly owned manual instances.
+
+Never construct a second `SolarUI`. Its registry is static, so another constructor registers the
+default selectors again.
 
 Before creating a new JS component, check whether an existing Solaris component or a plain
 Bootstrap behavior already covers it. Do not write a bespoke component for a small piece of UI.

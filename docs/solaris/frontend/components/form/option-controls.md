@@ -21,3 +21,7 @@ groups also accept `{ id, checked }` instructions. Only `change` is supported.
 
 Do not register group children independently: their generated children are ignored and the wrapper owns
 the Form binding.
+
+Card variants use dedicated radio/checkbox and group plugins but preserve the same conceptual value
+shapes. Use card rendering only when the choice itself is the visual card; do not recreate card selection
+with click handlers.

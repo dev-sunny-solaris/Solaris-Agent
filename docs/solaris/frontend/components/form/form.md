@@ -28,6 +28,15 @@ this.form.set("email", value, true)
 
 Use `lazy` when configuration must be supplied from JavaScript, then call the component/Field `init()`.
 
+Read [Field](field.md) before wrapping an input. Not every standalone input type is Field-compatible.
+
+| UI | Form-owned | Serialized normally | Deferred |
+|---|---:|---:|---:|
+| Field and supported standalone inputs | yes | yes | no |
+| Notes, DocumentEditor, StageButtons | yes | yes | no |
+| ProfilePicture or Dropzone | no | no | optional |
+| Component carrying `ignore` | no | no | no |
+
 ## Modes and submit lifecycle
 
 - New mode: `POST`; call `newMode()`.
@@ -58,6 +67,9 @@ JSON is default; use `setToFormData()` only when the main request itself contain
 - DatePicker through `toString()`;
 - Notes to raw HTML;
 - ordinary inputs and DocumentEditor through `get()`.
+
+`load()` resets before populating. Per-field conversion errors are logged and skipped, so a resolved
+load does not guarantee that every field accepted its value.
 
 Use `addData()` only for payload values that are not represented by owned components. Disabled fields
 are preserved across submission state changes, while excluded and ignored fields are not serialized.
