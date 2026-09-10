@@ -21,25 +21,32 @@ Props: `id`, `bind`, `label`, `required`, `disabled`, `hidden`, `message`, `erro
 
 Field owns the lifecycle props of a wrapped input. Put `lazy` and `ignore` on Field:
 
+Correct:
+
 ```blade
-{{-- Correct: Field owns each lifecycle prop. --}}
 <x-core::field id="account_id" label="Account" lazy>
-    <x-core::lookup />
+	<x-core::lookup />
 </x-core::field>
 
 <x-core::field id="status" label="Status" ignore>
-    <x-core::select />
+	<x-core::select />
 </x-core::field>
+```
 
-{{-- Incorrect: lifecycle props bypass their owning Fields. --}}
+Incorrect:
+
+```blade
 <x-core::field id="account_id" label="Account">
-    <x-core::lookup lazy />
+	<x-core::lookup lazy />
 </x-core::field>
 
 <x-core::field id="status" label="Status">
-    <x-core::select ignore />
+	<x-core::select ignore />
 </x-core::field>
 ```
+
+Child lifecycle props do not control the owning Field. A child `lazy` can leave the manually created
+plugin uninitialized, while child `ignore` does not make the parent Field ignored.
 
 Without a Field wrapper, place supported lifecycle props directly on the standalone input:
 
@@ -55,4 +62,4 @@ Form supports them.
 
 Retrieve Field through `form.get(bindingKey)`. Its `get`, `set`, events, reset, validation, required,
 disabled, visibility, label, and message operations delegate to or coordinate the child plugin. For a
-lazy child, call `field.init(config)`, not a separately resolved child.
+lazy Field, call `field.init(config)`, not a separately resolved child.

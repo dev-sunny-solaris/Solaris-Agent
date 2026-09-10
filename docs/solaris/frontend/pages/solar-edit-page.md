@@ -23,8 +23,9 @@ profile panel, and can coordinate list-detail sections.
 
 Define the reusable Page class in one module, then instantiate it from the Blade-selected entry module:
 
+`resources/js/pages/account/page.js`:
+
 ```js
-// resources/js/pages/account/page.js
 import SolarEditPage from '@core-js/solaris/solar/solar-edit-page'
 
 export default class AccountEditPage extends SolarEditPage {
@@ -37,8 +38,9 @@ export default class AccountEditPage extends SolarEditPage {
 }
 ```
 
+`resources/js/pages/account/page-index.js`:
+
 ```js
-// resources/js/pages/account/page-index.js
 import AccountEditPage from './page'
 
 new AccountEditPage()
@@ -50,7 +52,9 @@ new AccountEditPage()
     title="Account"
     model="Account"
     path="account/page-index">
-    {{-- Page content --}}
+    <x-core::field id="name" label="Name">
+        <x-core::input />
+    </x-core::field>
 </x-core::page.edit>
 ```
 
@@ -121,6 +125,55 @@ Slots:
 Button IDs and Form ID are framework contracts. Do not reuse them for unrelated components on the
 same Page.
 
+## Organizing the Form with Tabs and Fieldsets
+
+Put Tab in SolarEditPage's default slot so every pane remains inside the generated `_form`. Tab changes
+visibility only; Fields in inactive panes remain Form-owned and participate in normal serialization and
+validation.
+
+Each TabNav ID must exactly match one TabContent ID, and exactly one initial pair must be active. Use an
+accordion Fieldset when it wraps fields; a non-accordion Fieldset is only a labeled divider and discards
+its slot. Read [Tab](../components/tab.md) and [Fieldset](../components/fieldset.md) for the complete
+contracts.
+
+```blade
+<x-core::page.edit
+	:id="$account?->id"
+	title="Account"
+	model="account"
+	path="account/page-index">
+
+	<x-core::tab id="account-tabs" variant="tab-style-7">
+		<x-slot:nav>
+			<x-core::tab-nav id="account-general" active>General</x-core::tab-nav>
+			<x-core::tab-nav id="account-address">Address</x-core::tab-nav>
+		</x-slot>
+
+		<x-slot:content>
+			<x-core::tab-content id="account-general" active>
+				<x-core::fieldset id="account-identity" label="Identity" accordion>
+					<x-core::field id="name" label="Name" required>
+						<x-core::input />
+					</x-core::field>
+				</x-core::fieldset>
+			</x-core::tab-content>
+
+			<x-core::tab-content id="account-address">
+				<x-core::fieldset id="account-location" label="Location" accordion>
+					<x-core::field id="address" label="Address">
+						<x-core::textarea />
+					</x-core::field>
+				</x-core::fieldset>
+			</x-core::tab-content>
+		</x-slot>
+	</x-core::tab>
+</x-core::page.edit>
+```
+
+For a large Form, keep the Tab shell in the Page and include one section partial inside each
+TabContent. Partials must contain only their section content; they do not create another Page, Form, or
+JavaScript entry.
+
 ## Create and edit modes
 
 Blade selects POST when `id` is null and PUT otherwise. Form builds its generic endpoint from `model`,
@@ -189,8 +242,9 @@ init() {
 }
 ```
 
-The corresponding Blade component must be `lazy` when JS supplies initialization config. For a Field,
-call `init()` on the Field returned by Form; it forwards configuration to its child plugin.
+When JavaScript supplies initialization config, defer the first initialization with `lazy`. Put `lazy`
+on `<x-core::field>` for a wrapped input and call `init(config)` on the Field returned by Form. For a
+standalone input, put `lazy` on that input and call `init(config)` on the standalone instance.
 
 ## Dirty state and navigation guard
 

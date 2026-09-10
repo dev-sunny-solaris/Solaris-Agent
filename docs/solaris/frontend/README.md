@@ -39,8 +39,9 @@ Blade owns structure, identity, initial state, and declarative configuration. Co
 behavior. Pages coordinate Components. Keep standard Table, ModalForm, and Form behavior unless the task
 requires a real replacement; empty overrides disable useful defaults.
 
-Required conventions: [Blade](blade.md), [JavaScript](javascript.md), [Events](events.md), and
-[Ownership and lazy semantics](ownership-lazy.md).
+Required conventions: [Agent rules](../agent-rules.md), [Blade](blade.md),
+[JavaScript](javascript.md), [Events](events.md), and
+[Ownership and lazy semantics](ownership-lazy.md). Agent rules apply to every Page and Component guide.
 
 ## Component runtime
 

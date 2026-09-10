@@ -20,8 +20,8 @@ For create forms:
 
 ```js
 this.form.registerProfilePicture(
-    this.profilePicture,
-    response => `${BASE_URL}/accounts/${response.data.id}/avatar`
+	this.profilePicture,
+	response => `${BASE_URL}/accounts/${response.data.id}/avatar`
 )
 ```
 

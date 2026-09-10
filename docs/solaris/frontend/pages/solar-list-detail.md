@@ -48,7 +48,9 @@ The registration name is also the List Page ID. Its Table must use `<detail-name
         id="account-contact-modal"
         title="Contact"
         model="AccountContact">
-        {{-- Form fields --}}
+        <x-core::field id="contact_id" label="Contact">
+            <x-core::lookup source="contact" />
+        </x-core::field>
     </x-core::modal-form>
 @endpush
 ```
@@ -59,8 +61,9 @@ key. Use both. `lazy` lets detail `init()` register renderers and handlers befor
 
 ## Define the detail class
 
+`account/contact-detail.js`:
+
 ```js
-// account/contact-detail.js
 import SolarListDetail from '@core-js/solaris/solar/solar-list-detail'
 
 export default class AccountContactDetail extends SolarListDetail {
@@ -82,8 +85,9 @@ Do not call `new AccountContactDetail(...)` here. Export the class for parent re
 
 ## Register and construct from SolarEditPage
 
+`account/page.js`:
+
 ```js
-// account/page.js
 import SolarEditPage from '@core-js/solaris/solar/solar-edit-page'
 import AccountContactDetail from './contact-detail'
 
@@ -106,8 +110,9 @@ export default class AccountEditPage extends SolarEditPage {
 }
 ```
 
+`account/page-index.js`:
+
 ```js
-// account/page-index.js
 import AccountEditPage from './page'
 
 new AccountEditPage()

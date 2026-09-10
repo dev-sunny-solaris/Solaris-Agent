@@ -23,10 +23,62 @@
     permissions; never commit, push, or rewrite history unless the active policy and user allow it.
 12. **Never edit a sandbox's `vendor/`.** Edit the package; the Kit mirrors it.
 
+## Project code style
+
+These rules are the project-local copy of the global `code-style` contract. Apply them whenever
+writing, editing, or reviewing PHP, JavaScript, or TypeScript.
+
+### General comments
+
+- Do not add comments that restate the code.
+- Add an English explanatory comment only when the logic is genuinely too complex to be made
+  self-documenting through structure and naming.
+- Broader rationale and design decisions belong in documentation, not inline comments.
+
+### PHP
+
+- Indent with tabs at width 4; do not use spaces for indentation.
+- Put class and method opening braces on a new line.
+- Put control-structure opening braces on the same line.
+- Always put a block body on a new line and use braces, including for single-line blocks.
+- Name methods and variables in `camelCase`. An underscore separator is allowed for long, specific
+  names. Database tables and columns use `snake_case`.
+- Add native parameter and return types wherever possible. Declare every valid union member and use
+  `mixed` only for genuinely dynamic values.
+- Prefer guard clauses and early returns. Do not nest `if` branches when the flow can read from top
+  to bottom.
+- Never add PHPDoc to methods. Native parameter and return types must describe the contract.
+- Add a normal English comment only for genuinely complex logic that cannot explain itself.
+
+### JavaScript and TypeScript
+
+- Indent with tabs at width 4; do not use spaces for indentation.
+- Put opening braces on the same line. Always put a block body on a new line and use braces,
+  including for single-line blocks.
+- Name functions and variables in `camelCase`. An underscore separator is allowed for long,
+  specific names. JSON response keys use `snake_case`.
+- Prefer guard clauses and early returns; avoid nested `if` branches.
+- Every method and function must have English JSDoc with `@param` entries that declare parameter
+  types and an `@returns` entry that declares the return type. Do not add prose that merely restates
+  the method name or implementation.
+- In TypeScript, explicitly type every parameter and return value. Prefer interfaces for object
+  shapes, avoid `any`, and use `unknown` with narrowing for genuinely dynamic values.
+- Use Solaris' configured Axios module for HTTP requests; never use raw `fetch`.
+- Use the shared Helper `downloadFile(url, method, { headers, data })` API for file or blob downloads.
+  Inside the SolarPage family, access it through `this.helper.downloadFile(...)`; do not import Helper
+  again. Outside a Page, use the shared Helper according to that module's ownership contract.
+- In a request `catch`, show a manual error alert only when `!error?.response`; the Axios interceptor
+  already handles server responses.
+- Group related class methods with `#region` and `#endregion` when grouping improves navigation. Use
+  this order when applicable: Static, Lifecycle, Public API, then feature-specific regions.
+
 ## Checklist — adding a module to a package
 
 - [ ] Package chosen by domain ownership; no new upward/sideways dependency
-- [ ] Migration added with the package's filename prefix, driver-agnostic
+- [ ] Migration added with the package's filename prefix and remains driver-agnostic
+- [ ] Every foreign key declares `cascadeOnDelete()` for owned details or nullable
+      `nullOnDelete()` for normal references, then calls `MigrationHelper::createIndexIfNeeds()`;
+      normal non-FK indexes use Laravel's standard index API
 - [ ] Model extends the right base; `$table`, `$displayValue`, `$prepareColumns`, `$searchColumns`,
       `$orderBy`, `$direction` set; access attributes declared and accurate; scopes exist
 - [ ] Repository holds all logic; only the needed hooks implemented; no extra transaction wrapper

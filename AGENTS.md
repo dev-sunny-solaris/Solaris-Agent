@@ -54,15 +54,15 @@ implementation paths are relative to their declared owner root.
 | [Third-party API](docs/solaris/backend/third-party-api.md) | Exposing a module to partners |
 | [Workflow](docs/solaris/maintenance/workflow.md) | Running, testing, or installing through Solaris-Kit |
 | [Release](docs/solaris/maintenance/release.md) | Package versioning and breaking changes |
-| [Agent rules](docs/solaris/agent-rules.md) | Working rules and module checklist |
+| [Agent rules](docs/solaris/agent-rules.md) | Working rules, project code style, and module checklist |
 
 ## Minimum reading for common tasks
 
 | Task | Files |
 |---|---|
 | New module in a package | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Layering](docs/solaris/architecture/layering.md), [Config](docs/solaris/architecture/config-registry.md), [Gateways](docs/solaris/architecture/runtime-gateways.md), [PHP](docs/solaris/backend/php-standards.md), [Database](docs/solaris/backend/database.md), [Rules](docs/solaris/agent-rules.md) |
-| New reusable Blade/JS Component | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Anatomy](docs/solaris/architecture/package-anatomy.md), [Frontend](docs/solaris/frontend/README.md), then its selected Component guide |
-| New Page Blade or Page JS | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Anatomy](docs/solaris/architecture/package-anatomy.md), [Frontend](docs/solaris/frontend/README.md), then its selected Page guide |
+| New reusable Blade/JS Component | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Rules](docs/solaris/agent-rules.md), [Anatomy](docs/solaris/architecture/package-anatomy.md), [Frontend](docs/solaris/frontend/README.md), then its selected Component guide |
+| New Page Blade or Page JS | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Rules](docs/solaris/agent-rules.md), [Anatomy](docs/solaris/architecture/package-anatomy.md), [Frontend](docs/solaris/frontend/README.md), then its selected Page guide |
 | Expose an existing module to mobile | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Config](docs/solaris/architecture/config-registry.md), [Mobile API](docs/solaris/backend/mobile-api.md) |
 | Expose an existing module to partner API | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Config](docs/solaris/architecture/config-registry.md), [Third-party API](docs/solaris/backend/third-party-api.md) |
 | Change a generated convention | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [PHP](docs/solaris/backend/php-standards.md), [Generators](docs/solaris/maintenance/generators-stubs.md), [Release](docs/solaris/maintenance/release.md) |

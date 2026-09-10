@@ -38,7 +38,7 @@ There are two targets.
 ### Update column data/rendering
 
 ```js
-this.table.updateCell(row, "total", value)
+this.table.updateCell(row, 'total', value)
 ```
 
 This changes row data by target column `name` and invalidates the cell for rerendering. Use it for a
@@ -47,7 +47,7 @@ calculated or non-editable display column.
 ### Control a column editor
 
 ```js
-const editor = this.table.getEditor(row, "price")
+const editor = this.table.getEditor(row, 'price')
 editor?.set(value)
 ```
 
@@ -58,9 +58,9 @@ type and may include `get`, `set`, `reset`, `disabled`, `enabled`, `error`, and
 Listen to changes with `column change:<name>`:
 
 ```js
-this.table.on("column change:quantity", (row, quantity, rowData) => {
-    this.table.updateCell(row, "total", quantity * rowData.price)
-}, "OrderListPage")
+this.table.on('column change:quantity', (row, quantity, rowData) => {
+	this.table.updateCell(row, 'total', quantity * rowData.price)
+}, 'OrderListPage')
 ```
 
 Use `column config:<name>` to merge dynamic configuration before an editor initializes, especially

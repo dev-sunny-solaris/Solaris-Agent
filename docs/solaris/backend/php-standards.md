@@ -31,6 +31,30 @@ exposed by `prepared()`), `$searchColumns`, `$orderBy`, `$direction`.
 - When `ImportAccess` is declared, implement `importRules(array $row): array`.
 - Every scope named in `DataTableAccess(scopes: [...])` or `LookupAccess(scopes: [...])` must exist.
 
+### Static Lookup UUID constants
+
+When application logic identifies stable, seeded Lookup rows by UUID, declare those identifiers as
+public constants in a dedicated `<LookupName>Const` class under the owning package's `src/Const/`.
+Do not repeat UUID literals in models, repositories, controllers, seeders, or other server-side logic:
+
+```php
+namespace Solaris\Service\Const;
+
+class CaseStatusConst
+{
+	public const New = '019b5a10-0000-7005-8000-000000000001';
+	public const InProgress = '019b5a10-0000-7005-8000-000000000002';
+	public const WaitingForResponse = '019b5a10-0000-7005-8000-000000000003';
+	public const Resolved = '019b5a10-0000-7005-8000-000000000004';
+	public const Closed = '019b5a10-0000-7005-8000-000000000005';
+}
+```
+
+Seeders and backend logic reference `CaseStatusConst::New` and the other named constants. If frontend
+logic needs the same identifiers, mirror the keys and UUID values in `resources/js/const.js` as
+`CaseStatus`; see [JavaScript conventions](../frontend/javascript.md). The backend Const class remains
+canonical. This pattern is only for stable static Lookup records.
+
 ## Repositories
 
 A repository is a mini-service bound to one model. All domain logic, transformation and CRUD live

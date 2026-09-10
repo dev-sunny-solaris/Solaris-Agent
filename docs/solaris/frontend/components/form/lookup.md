@@ -89,37 +89,79 @@ single display column.
 
 ## Dynamic configuration
 
-Use `lazy` when initialization requires callbacks. For a Lookup wrapped by Field, call `init()` on
-the returned Field; Field forwards the config to its Lookup plugin:
+`lazy` prevents Lookup from initializing in its constructor. Use it whenever JavaScript must provide
+custom configuration before the plugin builds, including request filters, `optionsTemplate`, or
+`selectionTemplate`. A lazy Lookup remains unusable until its owner calls `init()`, even when no config
+is passed.
+
+For a Lookup wrapped by Field, put `lazy` on Field and initialize the Field returned by Form:
+
+```blade
+<x-core::field id="contact_id" label="Contact" lazy>
+	<x-core::lookup source="contact" />
+</x-core::field>
+```
+
+For a standalone Lookup, put `lazy` directly on Lookup and initialize that Lookup instance. Resolve it
+with `this.form.get(bindingKey)` when it is directly owned by Form, or `this.get(id)` when it is outside
+Form:
+
+```blade
+<x-core::lookup id="contact_id" source="contact" lazy />
+```
 
 ```js
-const account = this.form.get("account_id")
-const contact = this.form.get("contact_id")
+const contact = this.form.get('contact_id')
+
+contact.init()
+```
+
+Pass every custom filter or template through that first `init(config)` call. Import `Filter`, create
+an instance, and prefer its method-chaining API over the supported string DSL:
+
+```js
+import Filter from '@core-js/solaris/filter/filter'
+
+const account = this.form.get('account_id')
+const contact = this.form.get('contact_id')
+
+/**
+ * @returns {{filter: Object[]}}
+ */
+const resolveContactParam = () => {
+	const accountId = account.get()?.id
+	const filter = accountId
+		? new Filter().and('account_id', accountId)
+		: new Filter()
+
+	return { filter: filter.get() }
+}
+
+/**
+ * @param {{name: string}} item
+ * @returns {string}
+ */
+const renderOption = item => `<strong>${item.name}</strong>`
+
+/**
+ * @param {{name: string, code?: string}} item
+ * @returns {string}
+ */
+const renderSelection = item => `<span>${item.name} · ${item.code ?? ''}</span>`
 
 contact.init({
-    param: (body) => {
-        const accountId = account.get()?.id
-        body.filter = accountId
-            ? new Filter().and("account_id", accountId).get()
-            : []
-        return body
-    },
+	param: resolveContactParam,
+	optionsTemplate: renderOption,
+	selectionTemplate: renderSelection,
 })
 ```
 
-`param(body)` runs for every remote request and may add filters or other custom request values.
-
-Custom rendering is configured separately:
-
-```js
-lookup.init({
-    optionsTemplate: (item) => `<strong>${item.name}</strong>`,
-    selectionTemplate: (item) => `<span>${item.name} · ${item.code ?? ""}</span>`,
-})
-```
-
+- `param(body)` runs for every remote request and must return the request values to merge.
+- Build `filter` with `new Filter()` and chaining such as `.and(...)`; use the string DSL only when
+  an existing declarative contract specifically requires it.
 - `optionsTemplate(item)` renders dropdown rows.
 - `selectionTemplate(item)` renders the selected value.
+- `selectedTemplate` is not a Lookup config key.
 - Request every referenced property with `extend_columns`.
 - Use `link` in JS or `link_url` in Blade instead of adding a manual click handler to selection.
 
@@ -139,9 +181,9 @@ Lookup object. Edit responses must therefore include display data, not only the 
 Lookup supports `change`, `search`, `open`, and `close`:
 
 ```js
-this.form.get("customer_id").on("change", (value) => {
-    this.form.set("contact_id", null, true)
-}, "EditPage")
+this.form.get('customer_id').on('change', value => {
+	this.form.set('contact_id', null, true)
+}, 'EditPage')
 ```
 
 Use named handlers. Use Component events instead of native DOM listeners when the event is exposed.

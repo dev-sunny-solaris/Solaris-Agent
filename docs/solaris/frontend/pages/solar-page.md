@@ -30,12 +30,15 @@ constructor(autoInit = true)
 Construction calls the overridden `init()` immediately by default. Put Page startup logic there:
 
 ```js
-import SolarPage from "@core-js/solaris/solar/solar-page"
+import SolarPage from '@core-js/solaris/solar/solar-page'
 
 export default class ExamplePage extends SolarPage {
-    init() {
-        this.form = this.get("example-form")
-    }
+	/**
+	 * @returns {void}
+	 */
+	init() {
+		this.form = this.get('example-form')
+	}
 }
 ```
 
@@ -43,10 +46,14 @@ Do not add a constructor only to call `init()`. If subclass state must exist bef
 disable auto-init explicitly:
 
 ```js
+/**
+ * @param {Object} options
+ * @returns {void}
+ */
 constructor(options) {
-    super(false)
-    this.options = options
-    this.init()
+	super(false)
+	this.options = options
+	this.init()
 }
 ```
 
@@ -55,7 +62,7 @@ With auto-init enabled, fields assigned after `super()` do not exist when `init(
 ## Accessing Components
 
 ```js
-const component = this.get("solar-id")
+const component = this.get('solar-id')
 ```
 
 `get()` delegates to shared `SolarUI.get()` and returns the initialized Component class or `null`.
@@ -78,10 +85,10 @@ Use Core `resources/views/components/page/base.blade.php`:
     path="example/index">
 
     <x-slot:buttons>
-        {{-- Page-level actions --}}
+        <x-core::button id="example-action">Run</x-core::button>
     </x-slot>
 
-    {{-- Default slot: main Page content --}}
+    <div>Page content</div>
 </x-core::page.base>
 ```
 
@@ -111,16 +118,16 @@ Slots:
 
 ## Page entry convention
 
-Package development must separate reusable logic and construction:
+Package development must separate reusable logic and construction. Reusable `page.js` or `list.js`:
 
 ```js
-// page.js or list.js
 export default class ExamplePage extends SolarPage {}
 ```
 
+Executable `page-index.js` or `list-index.js`:
+
 ```js
-// page-index.js or list-index.js
-import ExamplePage from "./page"
+import ExamplePage from './page'
 
 new ExamplePage()
 ```

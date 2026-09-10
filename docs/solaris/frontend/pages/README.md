@@ -3,6 +3,8 @@
 Pages are complete screens that coordinate reusable SolarUI Components and page-specific behavior.
 They are not registered with `SolarUI.register()`.
 
+[Agent rules](../../agent-rules.md) are mandatory for every Page implementation and example.
+
 Resolve every package owner and source-relative path through
 [Package registry](../../package-registry.md) before opening implementation files.
 

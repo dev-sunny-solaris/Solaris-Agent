@@ -31,7 +31,7 @@ The ID is the Page Blade ID:
 ```
 
 ```js
-new RoleListPage("role")
+new RoleListPage('role')
 ```
 
 Blade creates the primary Table as `<page-id>_list`. Construction resolves standard references,
@@ -88,7 +88,7 @@ finish registration before the final render:
 ```
 
 ```js
-new AccountListPage("account")
+new AccountListPage('account')
 ```
 
 Pass `false` as `autoRender` only when custom code deliberately owns the final call to
@@ -113,9 +113,14 @@ Table removes the row, triggers `deleted`, and refreshes. Return `true` only aft
 deletion succeeds; any other result keeps the row:
 
 ```js
+/**
+ * @param {Object} data
+ * @returns {Promise<boolean>}
+ */
 async delete(data) {
-    await this.axios.delete(`${BASE_URL}/module/${data.id}`)
-    return true
+	await this.axios.delete(`${BASE_URL}/module/${data.id}`)
+
+	return true
 }
 ```
 
@@ -128,8 +133,8 @@ async delete(data) {
 | `edit(row, data)` | Custom Edit flow replacing automatic ModalForm Edit |
 | `view(row, data)` | View action |
 | `rendering()` | Before DataTables initialization |
-| `ready(settings, json)` | Initial render/data load complete |
-| `draw(event, settings)` | Every draw |
+| `ready(settings, json)` | Initial render/data load complete; called once |
+| `draw(event, settings)` | Subsequent redraws after the Table is ready |
 | `rowCreated(row, data, dataIndex)` | Row DOM created |
 | `rowClick`, `rowDoubleClick`, `rowContextMenu` | Row interactions |
 | `columnsCreated(name, row, cell, cellData, rowData)` | Any cell created |
@@ -138,6 +143,27 @@ async delete(data) {
 
 Helpers include `columnRender`, `columnCreated`, `loading`, `refresh`, `hasModalForm`, and the
 `action*` family. Column handlers must be registered in `init()` before Table render.
+
+`ready()` and `draw()` are not interchangeable. `ready()` covers the initial render and runs only
+once. `draw()` starts after the Table has reached ready state and covers subsequent redraws. Logic
+that must initialize or enhance rendered content both initially and after every redraw must run from
+both hooks. Keep the implementation in one shared method and call it from each hook:
+
+```js
+/**
+ * @returns {void}
+ */
+ready() {
+	this.initializeRenderedContent()
+}
+
+/**
+ * @returns {void}
+ */
+draw() {
+	this.initializeRenderedContent()
+}
+```
 
 `columnsCreated(name, row, cell, cellData, rowData)` is the global hook called for every created
 column cell. `columnCreated(name, callback)` registers a callback for only one logical column.
@@ -150,10 +176,13 @@ Use `columnRender(name, callback)` when a cell must display custom HTML or combi
 fields. `name` is the logical Table Column name—not necessarily its `data` path:
 
 ```js
+/**
+ * @returns {void}
+ */
 init() {
-    this.columnRender("customer_id", (data, rowData) => {
-        return `<strong>${data ?? "-"}</strong><small>${rowData.customer?.code ?? ""}</small>`
-    })
+	this.columnRender('customer_id', (data, rowData) => {
+		return `<strong>${data ?? '-'}</strong><small>${rowData.customer?.code ?? ''}</small>`
+	})
 }
 ```
 
@@ -167,10 +196,13 @@ column definitions can no longer be changed safely.
 Use `columnCreated(name, callback)` only when behavior requires the completed cell DOM:
 
 ```js
+/**
+ * @returns {void}
+ */
 init() {
-    this.columnCreated("status_id", (row, cell, cellData, rowData) => {
-        cell.querySelector("button")?.addEventListener("click", () => this.openStatus(rowData))
-    })
+	this.columnCreated('status_id', (row, cell, cellData, rowData) => {
+		cell.querySelector('button')?.addEventListener('click', () => this.openStatus(rowData))
+	})
 }
 ```
 
@@ -185,14 +217,20 @@ Add actions from `onActionCreated(row, cell, rowData)`.
 ### Inside the standard action group
 
 ```js
+/**
+ * @param {HTMLTableRowElement} row
+ * @param {HTMLTableCellElement} cell
+ * @param {Object} rowData
+ * @returns {void}
+ */
 onActionCreated(row, cell, rowData) {
-    this.actionBefore(row, "delete-action", {
-        selector: "approve-action",
-        label: "Approve",
-        icon: "ri-check-line",
-        color: "success",
-        callback: () => this.approve(rowData.id),
-    })
+	this.actionBefore(row, 'delete-action', {
+		selector: 'approve-action',
+		label: 'Approve',
+		icon: 'ri-check-line',
+		color: 'success',
+		callback: () => this.approve(rowData.id),
+	})
 }
 ```
 
@@ -217,18 +255,24 @@ If an action must remain outside View/Edit/Delete, create it through a Solaris/d
 insert it as a sibling of `.button-action`:
 
 ```js
+/**
+ * @param {HTMLTableRowElement} row
+ * @param {HTMLTableCellElement} cell
+ * @param {Object} rowData
+ * @returns {void}
+ */
 onActionCreated(row, cell, rowData) {
-    const standardActions = cell.querySelector(".button-action")
-    const customButton = this.createActivityButton(rowData)
-    if (!standardActions || !customButton) {
-        return
-    }
+	const standardActions = cell.querySelector('.button-action')
+	const customButton = this.createActivityButton(rowData)
+	if (!standardActions || !customButton) {
+		return
+	}
 
-    const wrapper = document.createElement("div")
+	const wrapper = document.createElement('div')
 
-    wrapper.className = "d-flex justify-content-center align-items-center gap-1"
-    wrapper.append(customButton, standardActions)
-    cell.replaceChildren(wrapper)
+	wrapper.className = 'd-flex justify-content-center align-items-center gap-1'
+	wrapper.append(customButton, standardActions)
+	cell.replaceChildren(wrapper)
 }
 ```
 

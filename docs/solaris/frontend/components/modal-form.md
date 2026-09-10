@@ -12,7 +12,9 @@ ModalForm composes a Modal and Form so implementation normally provides only fie
 
 ```blade
 <x-core::modal-form id="role-modal" title="Role" model="Role">
-    {{-- Fields --}}
+    <x-core::field id="name" label="Name">
+        <x-core::input />
+    </x-core::field>
 </x-core::modal-form>
 ```
 

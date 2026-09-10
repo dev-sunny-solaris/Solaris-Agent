@@ -18,8 +18,8 @@ and multiplicity.
 
 ```js
 this.form.registerDropzone(
-    this.attachments,
-    response => ({ recordId: response.data.id })
+	this.attachments,
+	response => ({ recordId: response.data.id })
 )
 ```
 

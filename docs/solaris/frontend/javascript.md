@@ -4,8 +4,9 @@
 
 Package Pages separate reusable logic from execution:
 
+Reusable `page.js`:
+
 ```js
-// page.js
 import SolarEditPage from '@core-js/solaris/solar/solar-edit-page'
 
 export default class AccountPage extends SolarEditPage {
@@ -18,8 +19,9 @@ export default class AccountPage extends SolarEditPage {
 }
 ```
 
+Executable `page-index.js`:
+
 ```js
-// page-index.js
 import AccountPage from './page'
 
 new AccountPage()
@@ -31,7 +33,8 @@ between tightly coupled sibling Page files.
 ## Static Lookup constants
 
 If frontend logic needs a UUID belonging to a static, stable Lookup record, define the canonical
-constant on the backend and mirror it in the owning package or application's `resources/js/const.js`:
+`<LookupName>Const` class in the backend package's `src/Const/`, then mirror it in the owning package
+or application's `resources/js/const.js`. The frontend object drops the `Const` suffix:
 
 ```js
 const CaseStatus = {
@@ -64,8 +67,8 @@ import { CaseStatus } from '@service-js/const'
 const isResolved = statusId === CaseStatus.Resolved
 ```
 
-Keep object names, keys, and UUID values synchronized with the backend constants. Use this pattern
-only for static Lookup records. Obtain dynamic Lookup IDs from selected or returned data.
+Keep the frontend object domain, keys, and UUID values synchronized with its backend Const class. Use
+this pattern only for static Lookup records. Obtain dynamic Lookup IDs from selected or returned data.
 
 ## Interaction rules
 
