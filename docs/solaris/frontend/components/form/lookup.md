@@ -26,11 +26,18 @@ Models implementing `SolarisLookup`—including `LookupModel` descendants—can 
 ```blade
 <x-core::lookup
     id="status_id"
-    :options="SolarHelper::model('status')::toLookup()" />
+    :options="SolarHelper::model('status')::toSelect()" />
 ```
 
 Static items normalize to `{ id, name, selected? }` and are searched in the browser by `name`.
 Static Lookup `set()` may receive an existing option ID or the complete item object.
+Use `toSelect()` when a `LookupModel` supplies the static `options` prop. Do not use `toLookup()`
+for this purpose.
+
+When frontend logic needs a stable UUID from a static Lookup, import its named constant from the
+owning package or application's `resources/js/const.js`. That file mirrors the canonical backend
+constant. Never repeat the UUID literal inside Page or Component logic. This convention applies only
+to static, stable Lookup records; dynamic Lookup values must come from the selected or returned item.
 
 ### Remote model/controller source
 
@@ -63,7 +70,7 @@ disable the shared JS response cache.
 | Prop | Contract |
 |---|---|
 | `id`, `bind` | Visual ID and optional Form payload key; `id="visual:field_id"` is shorthand |
-| `options` | Static items, commonly `Model::toLookup()` |
+| `options` | Static items; use `LookupModel::toSelect()` for `LookupModel` descendants |
 | `source` | Remote model/controller shorthand |
 | `multiple` | Return one item versus an array |
 | `value` | JSON-encoded initial item or item array |

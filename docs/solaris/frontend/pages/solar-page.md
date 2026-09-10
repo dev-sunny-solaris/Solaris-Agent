@@ -19,6 +19,10 @@ The constructor exposes:
 | `this.axios` | Solaris' configured Axios instance |
 | `this.helper` | Shared Core `Helper` |
 
+These services are inherited by the complete Page family, including `SolarListPage`,
+`SolarEditPage`, and `SolarListDetail`. Inside any of these classes, call Helper APIs through
+`this.helper`. Do not import `Helper` again or construct another Helper instance in Page code.
+
 ```js
 constructor(autoInit = true)
 ```
@@ -150,4 +154,4 @@ are links; supply real URLs for navigable ancestors.
 - [ ] Startup logic is in `init()` and the Page is instantiated once.
 - [ ] `autoInit` is disabled only when pre-initialization state is required.
 - [ ] Components are obtained with `this.get()` rather than reconstructed.
-- [ ] Shared Axios and Helper services are reused.
+- [ ] Shared services use `this.axios` and `this.helper`; Page code does not import or construct them again.

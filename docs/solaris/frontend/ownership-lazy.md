@@ -9,6 +9,15 @@ initialization.
 `ignore` means automatic ownership/initialization skips the element. It does not create a manually
 accessible instance. Manual ownership must explicitly construct and destroy its instance.
 
+## Prop placement at Field boundaries
+
+When a supported input is wrapped by Field, Field owns that input's lifecycle. Put `lazy` and
+`ignore` on `<x-core::field>`, not on its child input Component. Field forwards the applicable state
+to its child plugin and remains the unit discovered by Form.
+
+When an input is used standalone, there is no Field boundary. Put `lazy` and `ignore` directly on
+the standalone input Component when its guide supports those props.
+
 ## Lazy semantics
 
 | Component | Meaning |
