@@ -12,12 +12,18 @@ used to exercise package source at runtime.
 | Scaffolding | `solaris:make` generates app files | Same consumer behavior | Maintain generators/stubs themselves |
 | Testing | Run the app | Solaris-Kit runs the app and mirrors package edits | Tests plus runtime verification through sandbox |
 
-**How to tell where you are:** if the repo root has a `composer.json` with
-`"name": "solaris/solaris-laravel-*"` and a `src/*ServiceProvider.php`, you are at package level.
+**How to tell where you are:**
 
-If the root is a Laravel app and contains `solaris.dev.json` or is registered by Solaris-Kit, it is
-a sandbox. A Laravel app consuming Solaris without that development registration is project level.
+| Markers at the repository root | Context |
+|---|---|
+| `composer.json` named `solaris/solaris-laravel-*` and a `src/*ServiceProvider.php` | Package |
+| Laravel app (`artisan`) whose `composer.json` requires `solaris/*`, with `solaris.dev.json` | Sandbox — confirm with `solaris sandbox check` |
+| Laravel app (`artisan`) whose `composer.json` requires `solaris/*`, without `solaris.dev.json` | Project |
+
 When markers conflict or are unavailable, ask rather than infer from the directory name.
+
+Tooling repositories — Solaris-Kit, Solar-UI, this documentation bundle — are none of these. Follow
+their own README; these docs do not apply.
 
 If the request builds a feature in an application, apply project-level rules and keep changes in the
 consumer app. If it changes reusable Solaris behavior, apply package-level rules and work in the

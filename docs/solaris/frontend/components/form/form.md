@@ -20,10 +20,10 @@ for visual ID `visual` bound as `key`. Inputs inside Field are registered once t
 excludes a component from Form ownership; `exclude(key)` temporarily omits an owned field from submit.
 
 ```js
-const email = this.form.get('email')
-email.set('user@example.com')
-const value = this.form.getValue('email')
-this.form.set('email', value, true)
+const email = this.form.get("email")
+email.set("user@example.com")
+const value = this.form.getValue("email")
+this.form.set("email", value, true)
 ```
 
 Use `lazy` when configuration must be supplied before first initialization. Put it on Field for a

@@ -42,61 +42,61 @@ use Solaris\Core\Repositories\BaseRepository;
 
 class {Model}Controller
 {
-    protected BaseRepository $repo;   // or the custom repository's type
+	protected BaseRepository $repo;   // or the custom repository's type
 
-    public function __construct()
-    {
-        $this->repo = new (Helper::repository('{key}'))(new (Helper::model('{key}')));
-    }
+	public function __construct()
+	{
+		$this->repo = new (Helper::repository('{key}'))(new (Helper::model('{key}')));
+	}
 
-    public function index(Request $request): JsonResponse
-    {
-        $search = $request->input('search');
-        $data   = $this->repo->list(
-            columns : $this->listColumn(),
-            search  : !empty($this->searchColumn())
-                ? ['search' => $search, 'columns' => $this->searchColumn()]
-                : $search,
-            filter  : $request->input('filter'),
-            sort    : $request->input('sort'),
-            page    : $request->input('page'),
-            length  : $request->input('length'),
-        );
+	public function index(Request $request): JsonResponse
+	{
+		$search = $request->input('search');
+		$data   = $this->repo->list(
+			columns : $this->listColumn(),
+			search  : !empty($this->searchColumn())
+				? ['search' => $search, 'columns' => $this->searchColumn()]
+				: $search,
+			filter  : $request->input('filter'),
+			sort    : $request->input('sort'),
+			page    : $request->input('page'),
+			length  : $request->input('length'),
+		);
 
-        return SolarResponse::list(Helper::mobileResouces('{key}'), $data);
-    }
+		return SolarResponse::list(Helper::mobileResouces('{key}'), $data);
+	}
 
-    public function show(string $id): {Model}Resource
-    {
-        $data = $this->repo->findComplete($id, $this->detailColumns());
+	public function show(string $id): {Model}Resource
+	{
+		$data = $this->repo->findComplete($id, $this->detailColumns());
 
-        return new (Helper::mobileResouces('{key}'))($data);
-    }
+		return new (Helper::mobileResouces('{key}'))($data);
+	}
 
-    public function store(): JsonResponse
-    {
-        /** @var {Model}Request */
-        $request = app(Helper::formRequest('{key}'));
+	public function store(): JsonResponse
+	{
+		/** @var {Model}Request */
+		$request = app(Helper::formRequest('{key}'));
 
-        return SolarResponse::success($this->repo->create($request->cleanData()));
-    }
+		return SolarResponse::success($this->repo->create($request->cleanData()));
+	}
 
-    public function update(string $id): JsonResponse
-    {
-        /** @var {Model}Request */
-        $request = app(Helper::formRequest('{key}'));
+	public function update(string $id): JsonResponse
+	{
+		/** @var {Model}Request */
+		$request = app(Helper::formRequest('{key}'));
 
-        return SolarResponse::success($this->repo->update($id, $request->cleanData()));
-    }
+		return SolarResponse::success($this->repo->update($id, $request->cleanData()));
+	}
 
-    public function destroy(string $id): JsonResponse
-    {
-        return SolarResponse::deleted($this->repo->delete($id));
-    }
+	public function destroy(string $id): JsonResponse
+	{
+		return SolarResponse::deleted($this->repo->delete($id));
+	}
 
-    public function listColumn(): array { return [/* ... */]; }
-    public function detailColumns(): array { return [/* ... */]; }
-    public function searchColumn(): array { return [/* optional — narrows the search */]; }
+	public function listColumn(): array { return [/* ... */]; }
+	public function detailColumns(): array { return [/* ... */]; }
+	public function searchColumn(): array { return [/* optional — narrows the search */]; }
 }
 ```
 
@@ -112,14 +112,14 @@ class {Model}Controller
   ```php
   class AccountController extends \Solaris\{ParentPackage}\Http\Controllers\Mobile\AccountController
   {
-      public function detailColumns(): array
-      {
-          return array_merge(parent::detailColumns(), ['extra_column']);
-      }
+  	public function detailColumns(): array
+  	{
+  		return array_merge(parent::detailColumns(), ['extra_column']);
+  	}
   }
   ```
 
-  Extension hierarchy follows the package layering: Core ← MasterData ← BaseCRM ← Sales / Marketing.
+  Extension hierarchy follows the package's `require` chain up to Core.
 
 ## Resource
 
@@ -131,9 +131,9 @@ use Solaris\Core\Http\Resources\BaseResource;
 
 class {Model}Resource extends BaseResource
 {
-    protected function list(Request $request): array { return [/* ... */]; }
+	protected function list(Request $request): array { return [/* ... */]; }
 
-    protected function detail(Request $request): array { return [/* ... */]; }
+	protected function detail(Request $request): array { return [/* ... */]; }
 }
 ```
 
@@ -155,17 +155,17 @@ In the package's `config/solaris.php`:
 
 ```php
 'mobile' => [
-    'controllers' => [
-        '{key}' => 'Solaris\\{Package}\\Http\\Controllers\\Mobile\\{Model}Controller',
-    ],
-    'resources' => [
-        '{key}' => 'Solaris\\{Package}\\Http\\Resources\\Mobile\\{Model}Resource',
-    ],
+	'controllers' => [
+		'{key}' => 'Solaris\\{Package}\\Http\\Controllers\\Mobile\\{Model}Controller',
+	],
+	'resources' => [
+		'{key}' => 'Solaris\\{Package}\\Http\\Resources\\Mobile\\{Model}Resource',
+	],
 ],
 
 // only if not already registered
 'repositories' => [
-    '{key}' => 'Solaris\\Core\\Repositories\\BaseRepository',
+	'{key}' => 'Solaris\\Core\\Repositories\\BaseRepository',
 ],
 ```
 
@@ -178,30 +178,30 @@ guard; everything else is inside `Route::middleware('auth.mobile')`. Token TTLs 
 `auth.mobile.access_token_ttl` / `refresh_token_ttl` in config.
 
 Route file structure: a `mobile` prefix, then `Route::middleware('auth.mobile')`, then the scope
-prefix (`master-data`, `crm`, ...), then one group per resource. Route name pattern:
-`mobile.{scope}.{resource}.{action}` — e.g. `mobile.master-data.account.store`. The list route
+prefix (the package key, e.g. `inventory`), then one group per resource. Route name pattern:
+`mobile.{scope}.{resource}.{action}` — e.g. `mobile.inventory.supplier.store`. The list route
 carries the bare `mobile.{scope}.{resource}` name, with no action suffix.
 
 ```php
 Route::prefix('{slug}')->group(function () {
-    $controller = Helper::mobileController('{key}');
+	$controller = Helper::mobileController('{key}');
 
-    Route::post('/list', [$controller, 'index'])
-        ->name('mobile.{scope}.{resource}');
+	Route::post('/list', [$controller, 'index'])
+		->name('mobile.{scope}.{resource}');
 
-    Route::get('/{id}', [$controller, 'show'])
-        ->whereUuid('id')
-        ->name('mobile.{scope}.{resource}.read');
+	Route::get('/{id}', [$controller, 'show'])
+		->whereUuid('id')
+		->name('mobile.{scope}.{resource}.read');
 
-    Route::post('/', [$controller, 'store'])
-        ->name('mobile.{scope}.{resource}.store');
+	Route::post('/', [$controller, 'store'])
+		->name('mobile.{scope}.{resource}.store');
 
-    Route::put('/{id}', [$controller, 'update'])
-        ->name('mobile.{scope}.{resource}.update');
+	Route::put('/{id}', [$controller, 'update'])
+		->name('mobile.{scope}.{resource}.update');
 
-    Route::delete('/{id}', [$controller, 'destroy'])
-        ->whereUuid('id')
-        ->name('mobile.{scope}.{resource}.destroy');
+	Route::delete('/{id}', [$controller, 'destroy'])
+		->whereUuid('id')
+		->name('mobile.{scope}.{resource}.destroy');
 });
 ```
 

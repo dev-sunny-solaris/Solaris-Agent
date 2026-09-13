@@ -65,15 +65,15 @@ and attributes on TabContent apply to the pane `<div>`.
 Resolve Tab through the owning Page using the root Tab ID:
 
 ```js
-import SolarEditPage from '@core-js/solaris/solar/solar-edit-page'
+import SolarEditPage from "@core-js/solaris/solar/solar-edit-page"
 
 export default class AccountEditPage extends SolarEditPage {
 	/**
 	 * @returns {void}
 	 */
 	init() {
-		this.tabs = this.get('account-tabs')
-		this.tabs.on('change', this.onTabChanged.bind(this), 'AccountEditPage')
+		this.tabs = this.get("account-tabs")
+		this.tabs.on("change", this.onTabChanged.bind(this), "AccountEditPage")
 	}
 
 	/**

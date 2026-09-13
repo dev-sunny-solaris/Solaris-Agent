@@ -38,21 +38,21 @@ public constants in a dedicated `<LookupName>Const` class under the owning packa
 Do not repeat UUID literals in models, repositories, controllers, seeders, or other server-side logic:
 
 ```php
-namespace Solaris\Service\Const;
+namespace Solaris\Inventory\Const;
 
-class CaseStatusConst
+class ReceiptStatusConst
 {
-	public const New = '019b5a10-0000-7005-8000-000000000001';
-	public const InProgress = '019b5a10-0000-7005-8000-000000000002';
-	public const WaitingForResponse = '019b5a10-0000-7005-8000-000000000003';
-	public const Resolved = '019b5a10-0000-7005-8000-000000000004';
-	public const Closed = '019b5a10-0000-7005-8000-000000000005';
+	public const New                = '019b5a10-0000-7005-8000-000000000001';
+	public const InProgress         = '019b5a10-0000-7005-8000-000000000002';
+	public const WaitingForApproval = '019b5a10-0000-7005-8000-000000000003';
+	public const Received           = '019b5a10-0000-7005-8000-000000000004';
+	public const Closed             = '019b5a10-0000-7005-8000-000000000005';
 }
 ```
 
-Seeders and backend logic reference `CaseStatusConst::New` and the other named constants. If frontend
+Seeders and backend logic reference `ReceiptStatusConst::New` and the other named constants. If frontend
 logic needs the same identifiers, mirror the keys and UUID values in `resources/js/const.js` as
-`CaseStatus`; see [JavaScript conventions](../frontend/javascript.md). The backend Const class remains
+`ReceiptStatus`; see [JavaScript conventions](../frontend/javascript.md). The backend Const class remains
 canonical. This pattern is only for stable static Lookup records.
 
 ## Repositories
@@ -63,15 +63,15 @@ here. Nothing queries a model directly from a controller.
 ```php
 class ProductRepository extends BaseRepository
 {
-    public function __construct(Product $model)
-    {
-        parent::__construct($model);
-    }
+	public function __construct(Product $model)
+	{
+		parent::__construct($model);
+	}
 
-    public function findComplete(string $id, array $columns = [])
-    {
-        return parent::findComplete($id, $columns);
-    }
+	public function findComplete(string $id, array $columns = [])
+	{
+		return parent::findComplete($id, $columns);
+	}
 }
 ```
 
@@ -91,12 +91,12 @@ Public surface: `all`, `list`, `find`, `findComplete`, `create`, `update`, `dele
 
 ```php
 public function list(
-    ?array $columns = null,
-    string|array|null $search = null,
-    array|Filter|null $filter = null,
-    string|array|null $sort = null,
-    int $page = 1,
-    int $length = 10
+	?array $columns = null,
+	string|array|null $search = null,
+	array|Filter|null $filter = null,
+	string|array|null $sort = null,
+	int $page = 1,
+	int $length = 10
 ): LengthAwarePaginator
 ```
 
@@ -114,27 +114,27 @@ A simple, web-only request defines `rules()` and nothing else. A module that is 
 third-party API splits the rule set instead, and `rules()` becomes a dispatcher:
 
 ```php
-class AccountRequest extends BaseFormRequest
+class SupplierRequest extends BaseFormRequest
 {
-    public function rules(): array
-    {
-        if ($this->routeIs('master-data.account.update.avatar')) {
-            return ['profile_picture' => $this->pictureValidation()];
-        }
+	public function rules(): array
+	{
+		if ($this->routeIs('inventory.supplier.update.avatar')) {
+			return ['profile_picture' => $this->pictureValidation()];
+		}
 
-        return match ($this->method()) {
-            'POST'  => $this->is('api/v1/*') ? static::apiCreateRules() : static::createRules(),
-            'PUT'   => static::updateRules(),
-            'PATCH' => static::patchRules(),
-        };
-    }
+		return match ($this->method()) {
+			'POST'  => $this->is('api/v1/*') ? static::apiCreateRules() : static::createRules(),
+			'PUT'   => static::updateRules(),
+			'PATCH' => static::patchRules(),
+		};
+	}
 
-    public static function createRules(): array { /* ... */ }
+	public static function createRules(): array { /* ... */ }
 
-    public static function updateRules(): array
-    {
-        return array_merge(static::createRules(), [/* fields only on the edit page */]);
-    }
+	public static function updateRules(): array
+	{
+		return array_merge(static::createRules(), [/* fields only on the edit page */]);
+	}
 }
 ```
 

@@ -1,111 +1,164 @@
-# Development Workflow
+# Solaris-Kit
 
-**A package cannot run on its own.** Development and testing happen in a host Laravel *sandbox*
-with the packages linked into it — never in the package repository directly, and never by editing
-a sandbox's `vendor/` tree.
+**A package never runs alone.** It is developed and tested inside a host Laravel *sandbox* that has
+the packages installed. Solaris-Kit is the toolchain for that: a single binary (`solaris`) that
+builds and runs the sandbox, mirrors package edits into it, merges configs, and guards composer. It
+drives PHP, composer, node, and npm — it does not replace them.
 
-The toolchain is **Solaris-Kit**, a single Go binary on `PATH` (`solaris`). It supervises the
-sandbox's processes, mirrors package edits into it, and handles the composer, scaffolding and
-packaging chores around it. It drives PHP, composer, node and npm — it does not replace them.
+## Prerequisite
 
-Two ways to run it:
+`solaris --version` must succeed before any package-level work. If it does not, stop and tell the
+user; agents never install or build the Kit themselves. When the user asks how to install, set up,
+or run the Kit, guide them with [Solaris-Kit setup guide](solaris-kit-setup.md).
 
-```
-solaris                    a shell with suggestions
-solaris <command>          a single command
-```
+## Agent vs human
 
-## Commands
+Interactive screens need a real terminal: `solaris` (the shell), `solaris setup`, `solaris dev`, and
+every wizard or picker (a command run without its required arguments). **Ask the user to run these.**
 
-| Command | Purpose |
-|---|---|
-| `setup` | Teach the Kit about your packages and presets |
-| `sandbox` | Build a new Laravel sandbox (wizard: name, location, package preset, DB, Redis, options) |
-| `dev` | Interactive supervisor — the daily loop |
-| `dev init` | Wire an existing sandbox up and edit what it runs |
-| `check` | Validate `solaris.dev.json` and print what would run |
-| `package new` | Scaffold a new Solaris package from the spatie skeleton |
-| `package init` | Set up a package's dev composer manifests |
-| `package list` | List packages, or resolve one with its dependencies |
-| `composer` | Run composer against the dev manifest, keeping `composer.json` clean |
-| `seed` | Run every package seeder in dependency order |
-| `config` | Merge package configs into the sandbox's `config/solaris.php` |
-| `pack` | Zip a package |
-| `build` | Bundle a sandbox for distribution |
+An agent may run only fully flagged, non-interactive forms, after confirming with the user. Without
+a terminal, a command that still needs an answer fails instead of prompting.
 
-`solaris <command> --help` for flags.
+## Primary commands
 
-## The daily loop
+### `solaris sandbox new` — build a sandbox
+
+Creates a Laravel application with the selected Solaris packages installed and wired, writes its
+`solaris.dev.json`, and registers it with the Kit.
 
 ```bash
-cd <sandbox>
-solaris dev
+solaris sandbox new <Directory> --app=<preset-or-package-key> [--db=pgsql] [--migrate --seed --npm]
 ```
 
-or from anywhere, by name — `solaris sandbox` registers what it builds:
+`--app` takes a SunnyApp preset or a single package key. Database and Redis defaults come from the
+Kit registry. `--resume <Directory>` continues a build that stopped part way.
+
+### `solaris dev` — run the sandbox
 
 ```bash
-solaris dev <SandboxName>
+solaris dev                 # inside the sandbox
+solaris dev <SandboxName>   # from anywhere
 ```
 
-One window: every process in a sidebar, one log pane, selective restart, and `:` for a command tab
-running in a real pseudo-terminal, so an artisan prompt can be answered without leaving the panel.
-`S` starts everything, `X` stops, `R` restarts; lowercase acts on the selection.
+One panel supervises every sandbox process (web, Vite, queues, Reverb, …) and mirrors package source
+into the sandbox `vendor/` as files are saved. **Edit in the package repository, verify in the
+sandbox. Never edit the sandbox `vendor/`.** This is a human-run command.
 
-Package edits are **mirrored** into the sandbox `vendor/` as you save (not symlinked — Vite watches
-that tree), and a `.blade.php` change refreshes the browser. So: **edit in the package repo, watch
-it in the sandbox.**
+### `solaris sandbox config` — merge config
 
-## The composer manifest swap
+```bash
+solaris sandbox config      # inside the sandbox
+```
 
-A Solaris package carries three manifests:
+Merges every package's `config/solaris.php` into the sandbox's, in dependency order, so later
+packages override earlier ones. Formatting and comments are preserved.
+
+**Run it after every change to a package `config/solaris.php`.** A new or changed key does not reach
+the sandbox until this runs, and a missing merge looks like a functional bug, not a config problem.
+
+### `solaris package composer` — composer inside a package
+
+```bash
+solaris package composer require vendor/name:^1.0
+solaris package composer update
+solaris package composer --recover
+```
+
+**Never run bare `composer install`, `update`, `require`, or `remove` inside a package.** Script
+runs such as `composer run test` and `composer run analyse` are fine — they do not resolve
+dependencies. A package in
+development carries three manifests:
 
 | File | Contents | Git |
 |---|---|---|
-| `composer.json` | the real manifest, **without** `repositories` | committed |
-| `composer.local.json` | only the `repositories` block — path repos pointing at sibling packages | ignored |
-| `composer.dev.json` | `composer.json` plus those repositories | ignored |
+| `composer.json` | The real manifest, without `repositories` | Committed |
+| `composer.local.json` | Only path repositories pointing at local Solaris package source | Ignored |
+| `composer.dev.json` | `composer.json` plus those repositories | Ignored |
 
-Development needs the path repositories so a change in core is immediately visible to the packages
-above it. Git must not see them: those paths are absolute and machine-specific. `symlink: true` is
-correct *here* — the no-symlink rule applies to a sandbox's `vendor/`, not to package-to-package
-development links.
+The path repositories make a change in one package immediately visible to the packages above it.
+They are absolute, machine-specific paths, so git must never see them. Bare `composer` either misses
+them — resolving Solaris dependencies from a remote instead of local source — or, if they were added
+by hand, commits them.
 
-- `solaris package init` — run inside a package: locates its Solaris dependencies on disk, writes
-  both dev manifests, gitignores them, and installs. It never rewrites `composer.json`.
-- `solaris composer <args...>` — swaps the dev manifest in, runs composer, copies any new
-  requirement back to `composer.dev.json`, strips `repositories`, and restores a clean
-  `composer.json`. On failure it restores the backup and exits non-zero.
-- If a run is interrupted mid-swap, the next invocation refuses and tells you to run
-  `solaris composer --recover` first.
+`solaris package composer` swaps the dev manifest in, runs composer, copies any new requirement back
+to `composer.dev.json`, strips `repositories`, and restores a clean `composer.json`. On failure it
+restores the backup and exits non-zero. If a run was interrupted, the next one refuses until
+`--recover` is run. A package without `composer.dev.json` runs composer directly.
 
-**Never run bare `composer require` inside a package during development** — it will either miss the
-path repositories or commit them.
+## Flows
 
-## Scaffolding a new package
+### First-time setup
 
-`solaris package new` clones the spatie package skeleton and adjusts it to Solaris standards
-(requires `git` and network access). One input drives every derived name:
+Full walkthrough: [Solaris-Kit setup guide](solaris-kit-setup.md).
 
-| | `Inventory` | `master-data` |
-|---|---|---|
-| Directory | `Solaris-Laravel-Inventory` | `Solaris-Laravel-MasterData` |
-| Composer | `solaris/solaris-laravel-inventory` | `solaris/solaris-laravel-masterdata` |
-| Namespace | `Solaris\Inventory` | `Solaris\MasterData` |
-| Provider | `SolarisInventoryServiceProvider` | `SolarisMasterDataServiceProvider` |
-| Registry key | `inventory` | `master-data` |
-| JS alias | `@inventory-js/*` | `@master-data-js/*` |
+1. Install the Kit (see Prerequisite).
+2. The user runs `solaris setup`, chooses the built-in preset (every Solaris package, its
+   dependencies, queues, and SunnyApp presets), presses `a` to scan package paths, then saves.
+3. The result is the Kit registry at `~/.solaris/solaris.json` (override with `SOLARIS_CONFIG`). It
+   holds each package's key, composer name, namespace, **source path**, dependencies, and queues,
+   plus presets and known sandboxes.
 
-Note the namespace and class name are different words: `Solaris\Inventory` holds
-`SolarisInventory`.
+Resolve package source paths and dependency order from the registry, never by guessing:
 
-## Config and seeding
+```bash
+solaris package list            # every known package and its path status
+solaris package list <key>      # dependency chain, e.g. core → … → <key>
+```
 
-- `solaris config` merges each package's `config/solaris.php` into the sandbox's, in dependency
-  order so later packages override earlier ones. Formatting and comments are preserved. **A config
-  key you add to a package only reaches the sandbox after this runs** — a missing merge looks like
-  a functional bug, not a config problem.
-- `solaris seed` runs every package seeder in dependency order, core first.
+### Create a new package
+
+The Kit scaffolds a package from the Spatie package skeleton and applies the Solaris layer. Requires
+`git` and network access.
+
+```bash
+solaris package new <Name> --deps=core [--parent=<directory>]
+cd Solaris-Laravel-<Name>
+solaris package init
+```
+
+One name drives every derived identity:
+
+| | `Inventory` |
+|---|---|
+| Directory | `Solaris-Laravel-Inventory` |
+| Composer | `solaris/solaris-laravel-inventory` |
+| Namespace | `Solaris\Inventory` |
+| Provider | `SolarisInventoryServiceProvider` |
+| Registry key | `inventory` |
+| JS alias | `@inventory-js/*` |
+
+The namespace and class name are different words: `Solaris\Inventory` holds `SolarisInventory`.
+The new package is registered in the Kit automatically (`--register=false` skips it).
+
+### Set up a cloned package
+
+1. The user clones the package repository.
+2. The user registers its path through `solaris setup` if the Kit does not know it yet.
+3. Inside the package: `solaris package init`. It locates every required Solaris package, writes
+   `composer.local.json` and `composer.dev.json`, git-ignores them, and installs through the swap.
+   Use `--path <key>=<directory>` when a dependency cannot be found automatically.
+
+`init` never rewrites `composer.json`.
+
+### Run composer
+
+Inside a package, always `solaris package composer <args>`. See above for why.
+
+### Change package config
+
+After editing a package `config/solaris.php`, run `solaris sandbox config` in the sandbox.
+
+## Other commands
+
+| Command | Purpose |
+|---|---|
+| `solaris sandbox setup [--dry-run]` | Generate `solaris.dev.json` for an existing sandbox and register it |
+| `solaris sandbox check` | Validate `solaris.dev.json` and print what would run; starts nothing |
+| `solaris sandbox seed [--package <key>] [--class <Seeder>] [--dry-run]` | Run seeders in dependency order, or specific ones |
+| `solaris sandbox build` | Bundle a sandbox for distribution |
+| `solaris package pack [--package <keys>] [--out <dir>]` | Zip packages |
+
+`solaris <command> --help` lists every flag.
 
 ## Quality gates
 
@@ -114,8 +167,9 @@ Run from the package repository:
 ```bash
 composer run test        # Pest, on Orchestra Testbench
 composer run analyse     # PHPStan
-composer run format      # Laravel Pint
 ```
+
+Never run `composer run format`; see [Code style](../code-style.md).
 
 ## Stack
 

@@ -64,15 +64,15 @@ key. Use both. `lazy` lets detail `init()` register renderers and handlers befor
 `account/contact-detail.js`:
 
 ```js
-import SolarListDetail from '@core-js/solaris/solar/solar-list-detail'
+import SolarListDetail from "@core-js/solaris/solar/solar-list-detail"
 
 export default class AccountContactDetail extends SolarListDetail {
 	/**
 	 * @returns {void}
 	 */
 	init() {
-		this.columnRender('contact_id', (value, rowData) => {
-			return rowData.contact?.name ?? '-'
+		this.columnRender("contact_id", (value, rowData) => {
+			return rowData.contact?.name ?? "-"
 		})
 	}
 }
@@ -88,15 +88,15 @@ Do not call `new AccountContactDetail(...)` here. Export the class for parent re
 `account/page.js`:
 
 ```js
-import SolarEditPage from '@core-js/solaris/solar/solar-edit-page'
-import AccountContactDetail from './contact-detail'
+import SolarEditPage from "@core-js/solaris/solar/solar-edit-page"
+import AccountContactDetail from "./contact-detail"
 
 export default class AccountEditPage extends SolarEditPage {
 	/**
 	 * @returns {void}
 	 */
 	init() {
-		this.registerDetail('account-contact', AccountContactDetail, 'account_id')
+		this.registerDetail("account-contact", AccountContactDetail, "account_id")
 	}
 
 	/**
@@ -104,8 +104,8 @@ export default class AccountEditPage extends SolarEditPage {
 	 */
 	initDetail() {
 		this.accountContact
-			.on('saved', () => this.refreshForm())
-			.on('deleted', () => this.refreshForm())
+			.on("saved", () => this.refreshForm())
+			.on("deleted", () => this.refreshForm())
 	}
 }
 ```
@@ -113,7 +113,7 @@ export default class AccountEditPage extends SolarEditPage {
 `account/page-index.js`:
 
 ```js
-import AccountEditPage from './page'
+import AccountEditPage from "./page"
 
 new AccountEditPage()
 ```

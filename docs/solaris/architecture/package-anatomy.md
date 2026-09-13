@@ -23,27 +23,27 @@ jsconfig.json                 JS path aliases for the editor
 Every package uses `spatie/laravel-package-tools`:
 
 ```php
-class SolarisMasterDataServiceProvider extends PackageServiceProvider
+class SolarisInventoryServiceProvider extends PackageServiceProvider
 {
-    public function configurePackage(Package $package): void
-    {
-        $package
-            ->name('master-data')      // view namespace: master-data::
-            ->hasConfigFile(['solaris'])
-            ->hasViews('master-data')
-            ->discoversMigrations()
-            ->runsMigrations();
-    }
+	public function configurePackage(Package $package): void
+	{
+		$package
+			->name('inventory')        // view namespace: inventory::
+			->hasConfigFile(['solaris'])
+			->hasViews('inventory')
+			->discoversMigrations()
+			->runsMigrations();
+	}
 
-    public function packageBooted()
-    {
-        Route::middleware('web')->group(__DIR__.'/../routes/web.php');
+	public function packageBooted()
+	{
+		Route::middleware('web')->group(__DIR__.'/../routes/web.php');
 
-        Route::middleware('api')->prefix('api')->group([
-            __DIR__.'/../routes/api.php',
-            __DIR__.'/../routes/mobile.php',
-        ]);
-    }
+		Route::middleware('api')->prefix('api')->group([
+			__DIR__.'/../routes/api.php',
+			__DIR__.'/../routes/mobile.php',
+		]);
+	}
 }
 ```
 
@@ -53,21 +53,12 @@ logic in it.
 
 ## Asset aliases
 
-Each package exposes its own JS/CSS alias, resolved in the consumer app's `jsconfig.json` and Vite
-config:
+Each package exposes its own view namespace and JS/CSS aliases, derived from its key (`<key>::`,
+`@<key>-js/*`, `@<key>-css/*`) and resolved in the consumer app's `jsconfig.json` and Vite config.
+Core is `core::`, `@core-js/*`, `@core-css/*`.
 
-| Package | View | JS | CSS |
-|---|---|---|---|
-| core | `core::` | `@core-js/*` | `@core-css/*` |
-| masterdata | `master-data::` | `@master-data-js/*` | `@master-data-css/*` |
-| basecrm | `base-crm::` | `@base-crm-js/*` | `@base-crm-css/*` |
-| sales | `sales::` | `@sales-js/*` | `@sales-css/*` |
-| marketing | `marketing::` | `@marketing-js/*` | `@marketing-css/*` |
-| service | `service::` | `@service-js/*` | `@service-css/*` |
-| crm | `crm::` | `@crm-js/*` | `@crm-css/*` |
-
-See [Package registry](../package-registry.md) for Composer names, PHP namespaces, owner
-terms, and environment-specific source lookup.
+See [Package registry](../package-registry.md) for the derivation rule, Composer names, PHP
+namespaces, and environment-specific source lookup.
 
 Use aliases for reusable modules and package boundaries. Relative imports are allowed between tightly
 coupled sibling Page files, such as `page-index.js` importing `./page`. Imports from an ancestor package
@@ -75,17 +66,17 @@ must use that ancestor's alias:
 
 ```js
 // inside core
-import LayoutMenu from '@core-js/layouts/layout-menu'
+import LayoutMenu from "@core-js/layouts/layout-menu"
 
-// inside masterdata, pulling from core
-import SolarListPage from '@core-js/solaris/solar/solar-list-page'
+// inside inventory, pulling from core
+import SolarListPage from "@core-js/solaris/solar/solar-list-page"
 ```
 
 Blade and PHP resolve physical asset paths through the config-driven helper, never a hardcoded
 `vendor/...` string:
 
 ```php
-SolarAsset::js('pages/account/list.js', 'master-data');
+SolarAsset::js('pages/warehouse/list.js', 'inventory');
 SolarAsset::css('app.css');           // defaults to core
 SolarAsset::image('logo.png');
 ```

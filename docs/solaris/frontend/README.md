@@ -4,7 +4,7 @@ SolarUI is a Blade-first component system on Bootstrap 5. Components render HTML
 attributes; JS auto-initializes from those attributes. **There is no reactive server round-trip —
 it is not Livewire, and Solaris deliberately has no Livewire/Alpine layer. PHP is PHP, JS is JS.**
 
-Resolve terms such as Core, MasterData, and Sales—and every source-relative path—through
+Resolve package owners such as Core—and every source-relative path—through
 [Package registry](../package-registry.md). Never infer an absolute package repository path
 or edit an installed/mirrored `vendor/` copy.
 

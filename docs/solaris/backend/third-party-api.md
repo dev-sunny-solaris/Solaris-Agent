@@ -18,8 +18,8 @@ Core has no third-party entity of its own — it only ships the machinery.
 
 ```php
 Route::prefix('v1')
-    ->middleware(['api.log', 'auth.api_key', 'throttle:api_key'])
-    ->group(function () { /* entities */ });
+	->middleware(['api.log', 'auth.api_key', 'throttle:api_key'])
+	->group(function () { /* entities */ });
 ```
 
 **Order matters.** `api.log` wraps auth so rejected calls are still audited, and throttling only
@@ -46,41 +46,41 @@ use Solaris\Core\Http\Controllers\Api\BaseApiController;
 
 class AccountController extends BaseApiController
 {
-    public function key(): string { return 'account'; }
+	public function key(): string { return 'account'; }
 
-    public function columns(): array { return ['id', 'name', /* ... */]; }
+	public function columns(): array { return ['id', 'name', /* ... */]; }
 
-    public function relations(): array { return ['type', 'industry']; }
+	public function relations(): array { return ['type', 'industry']; }
 
-    public function searchColumns(): array { return ['name', 'primary_phone', 'email']; }
+	public function searchColumns(): array { return ['name', 'primary_phone', 'email']; }
 
-    public function entityDocs(): ApiEntity
-    {
-        return ApiEntity::make('Account')
-            ->description('Companies and organisations you do business with.');
-    }
+	public function entityDocs(): ApiEntity
+	{
+		return ApiEntity::make('Account')
+			->description('Companies and organisations you do business with.');
+	}
 
-    public function fieldDocs(): array
-    {
-        return [
-            'id'   => ApiField::uuid('Unique identifier.')->readOnly(),
-            'name' => ApiField::string('Registered company name.')->example('PT Sinar Jaya Abadi'),
-            'type' => ApiField::lookup('Account type, e.g. customer or prospect.'),
-        ];
-    }
+	public function fieldDocs(): array
+	{
+		return [
+			'id'   => ApiField::uuid('Unique identifier.')->readOnly(),
+			'name' => ApiField::string('Registered company name.')->example('PT Sinar Jaya Abadi'),
+			'type' => ApiField::lookup('Account type, e.g. customer or prospect.'),
+		];
+	}
 
-    public function endpointDocs(): array
-    {
-        return [
-            'index'   => ApiOperation::make('List accounts'),
-            'search'  => ApiOperation::make('Search accounts')->description('...'),
-            'show'    => ApiOperation::make('Get one account'),
-            'store'   => ApiOperation::make('Create an account'),
-            'update'  => ApiOperation::make('Update an account'),
-            'replace' => ApiOperation::make('Update an account (full)'),
-            'destroy' => ApiOperation::make('Delete an account'),
-        ];
-    }
+	public function endpointDocs(): array
+	{
+		return [
+			'index'   => ApiOperation::make('List accounts'),
+			'search'  => ApiOperation::make('Search accounts')->description('...'),
+			'show'    => ApiOperation::make('Get one account'),
+			'store'   => ApiOperation::make('Create an account'),
+			'update'  => ApiOperation::make('Update an account'),
+			'replace' => ApiOperation::make('Update an account (full)'),
+			'destroy' => ApiOperation::make('Delete an account'),
+		];
+	}
 }
 ```
 
@@ -107,35 +107,35 @@ Semantics the base implements, which the docs must not contradict:
 
 ```php
 Route::prefix('accounts')->group(function () {
-    $controller = Helper::apiController('account');
+	$controller = Helper::apiController('account');
 
-    Route::get('/', [$controller, 'index'])
-        ->middleware('permission:api.account.view')
-        ->name('api.v1.account.index');
+	Route::get('/', [$controller, 'index'])
+		->middleware('permission:api.account.view')
+		->name('api.v1.account.index');
 
-    Route::post('/search', [$controller, 'search'])
-        ->middleware('permission:api.account.view')
-        ->name('api.v1.account.search');
+	Route::post('/search', [$controller, 'search'])
+		->middleware('permission:api.account.view')
+		->name('api.v1.account.search');
 
-    Route::post('/', [$controller, 'store'])
-        ->middleware(['permission:api.account.create', 'api.idempotency'])
-        ->name('api.v1.account.store');
+	Route::post('/', [$controller, 'store'])
+		->middleware(['permission:api.account.create', 'api.idempotency'])
+		->name('api.v1.account.store');
 
-    Route::get('/{id}', [$controller, 'show'])->whereUuid('id')
-        ->middleware('permission:api.account.view')
-        ->name('api.v1.account.show');
+	Route::get('/{id}', [$controller, 'show'])->whereUuid('id')
+		->middleware('permission:api.account.view')
+		->name('api.v1.account.show');
 
-    Route::patch('/{id}', [$controller, 'update'])->whereUuid('id')
-        ->middleware('permission:api.account.update')
-        ->name('api.v1.account.update');
+	Route::patch('/{id}', [$controller, 'update'])->whereUuid('id')
+		->middleware('permission:api.account.update')
+		->name('api.v1.account.update');
 
-    Route::put('/{id}', [$controller, 'replace'])->whereUuid('id')
-        ->middleware('permission:api.account.update')
-        ->name('api.v1.account.replace');
+	Route::put('/{id}', [$controller, 'replace'])->whereUuid('id')
+		->middleware('permission:api.account.update')
+		->name('api.v1.account.replace');
 
-    Route::delete('/{id}', [$controller, 'destroy'])->whereUuid('id')
-        ->middleware('permission:api.account.delete')
-        ->name('api.v1.account.destroy');
+	Route::delete('/{id}', [$controller, 'destroy'])->whereUuid('id')
+		->middleware('permission:api.account.delete')
+		->name('api.v1.account.destroy');
 });
 ```
 
@@ -145,10 +145,10 @@ Naming: `api.v1.{entity}.{action}`. Plural, dashed URL segments.
 
 ```php
 'api' => [
-    'controllers' => [
-        'account' => 'Solaris\\{Package}\\Http\\Controllers\\Api\\AccountController',
-    ],
-    'resources' => [],
+	'controllers' => [
+		'account' => 'Solaris\\{Package}\\Http\\Controllers\\Api\\AccountController',
+	],
+	'resources' => [],
 ],
 ```
 

@@ -10,10 +10,10 @@ take the first value found; arrays are merged.
 
 ```php
 Helper::config('some.key', $default);   // always use this, never Laravel's config()
-Helper::model('account');               // → config solaris.model.models.account
-Helper::controller('account');          // → config solaris.controller.controllers.account
-Helper::repository('account');
-Helper::view('account');                // → ['list' => 'master-data::pages.account.list', ...]
+Helper::model('warehouse');             // → config solaris.model.models.warehouse
+Helper::controller('warehouse');        // → config solaris.controller.controllers.warehouse
+Helper::repository('warehouse');
+Helper::view('warehouse');              // → ['list' => 'inventory::pages.warehouse.list', ...]
 Helper::aiAgent($slug);
 Helper::aiTool($slug);
 ```
@@ -45,12 +45,12 @@ are aliased the same way).
 - Routes reference controllers through the registry, not by class name:
 
   ```php
-  Route::prefix('account')->group(function () {
-      $controller = Helper::controller('account');
+  Route::prefix('warehouse')->group(function () {
+  	$controller = Helper::controller('warehouse');
 
-      Route::get('/', [$controller, 'index'])->name('master-data.account');
-      Route::get('/{id}', [$controller, 'show'])->whereUuid('id')->name('master-data.account.read');
-      Route::get('/edit/{id}', [$controller, 'edit'])->whereUuid('id')->name('master-data.account.edit');
+  	Route::get('/', [$controller, 'index'])->name('inventory.warehouse');
+  	Route::get('/{id}', [$controller, 'show'])->whereUuid('id')->name('inventory.warehouse.read');
+  	Route::get('/edit/{id}', [$controller, 'edit'])->whereUuid('id')->name('inventory.warehouse.edit');
   });
   ```
 - Every new controller, model, repository, form request, view and AI agent/tool a package adds

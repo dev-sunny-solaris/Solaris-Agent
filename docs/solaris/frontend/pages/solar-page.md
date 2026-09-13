@@ -30,14 +30,14 @@ constructor(autoInit = true)
 Construction calls the overridden `init()` immediately by default. Put Page startup logic there:
 
 ```js
-import SolarPage from '@core-js/solaris/solar/solar-page'
+import SolarPage from "@core-js/solaris/solar/solar-page"
 
 export default class ExamplePage extends SolarPage {
 	/**
 	 * @returns {void}
 	 */
 	init() {
-		this.form = this.get('example-form')
+		this.form = this.get("example-form")
 	}
 }
 ```
@@ -62,7 +62,7 @@ With auto-init enabled, fields assigned after `super()` do not exist when `init(
 ## Accessing Components
 
 ```js
-const component = this.get('solar-id')
+const component = this.get("solar-id")
 ```
 
 `get()` delegates to shared `SolarUI.get()` and returns the initialized Component class or `null`.
@@ -127,7 +127,7 @@ export default class ExamplePage extends SolarPage {}
 Executable `page-index.js` or `list-index.js`:
 
 ```js
-import ExamplePage from './page'
+import ExamplePage from "./page"
 
 new ExamplePage()
 ```
@@ -144,8 +144,8 @@ Controllers pass:
 
 ```php
 $breadcrumbs = [
-    ['label' => 'Admin'],
-    ['label' => 'Role'],
+	['label' => 'Admin'],
+	['label' => 'Role'],
 ];
 ```
 

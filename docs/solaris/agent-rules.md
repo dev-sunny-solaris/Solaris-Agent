@@ -1,76 +1,44 @@
 # Working Rules and Checklists
 
-## Rules for agents
+## Safety fallbacks
 
-1. **Gather requirements first.** Ask before implementing if anything is unclear: new or existing
-   table, columns and types, relations, sub-resources, standard CRUD or a special flow (approval,
-   stage pipeline), list columns and filters, edit-page layout, export/import, mobile and API
-   exposure.
-2. **Confirm before touching files outside the request.** Package changes ripple downstream.
-3. **Read before writing.** Match the surrounding package's existing patterns; do not import a
+These apply unless the active agent's global rules say otherwise; those take precedence.
+
+- **Git is read-only.** Allowed: `status`, `log`, `diff`, `show`, `blame`, `branch --list`. Never
+  commit, push, or run any other Git write — including via alias, script, or `gh`. Never list the
+  agent as author or co-author.
+- **Never touch the database.** Do not connect to, query, or modify it. The database is the user's
+  domain. Schema changes are migrations; data changes are seeders.
+
+## Working rules
+
+1. **Deliver exactly what was asked.** If it would break something else, warn before doing it.
+2. **Stay in scope.** Never change, refactor, or "improve" anything the request did not name.
+3. **Plan multi-file changes.** A change to more than one file MUST start with a plan — files to
+   change and approach — and wait for approval, even when the design was agreed in chat.
+4. **Gather requirements before building a module.** Ask when unclear: new or existing table,
+   columns and types, relations, sub-resources, standard CRUD or a special flow (approval, stage
+   pipeline), list columns and filters, edit-page layout, export/import, mobile and API exposure.
+5. **Look before asking.** Search the paths these docs map first, with targeted search. Read file
+   slices, not whole files. Never re-read a file already read. Ask the user only when it is not
+   found there.
+6. **Read before writing.** Match the surrounding package's existing patterns; never import a
    convention from another framework.
-4. **Respect the layering.** Never introduce an upward or sideways dependency.
-5. **Register everything.** New class → config registry entry. New module → routes, menu seeder,
+7. **Ask for feedback when stuck.** When attempts repeat without a clear direction, stop and ask
+   the user. Report what was tried, the exact error, the suspected cause, and the options.
+8. **Respect the layering.** Never introduce an upward or sideways dependency.
+9. **Register everything.** New class → config registry entry. New module → routes, menu seeder,
    permissions.
-6. **Avoid redundant code comments.** Keep required JSDoc and explain only non-obvious rationale;
-   broader design decisions belong in documentation.
-7. **Do not over-engineer UI.** Check for an existing component or a plain Bootstrap pattern first.
-8. **Do not hardcode class names, vendor paths, or config values** the registry already resolves.
-9. **Stop after two failed attempts** at the same problem and report what you tried.
-10. **Never connect to or query a database directly.** Schema changes are migrations; data changes
-    are seeders.
-11. **Follow the active agent/environment Git policy.** Solaris documentation does not grant Git
-    permissions; never commit, push, or rewrite history unless the active policy and user allow it.
-12. **Never edit a sandbox's `vendor/`.** Edit the package; the Kit mirrors it.
+10. **Never hardcode class names, vendor paths, or config values** the registry already resolves.
+11. **Do not over-engineer UI.** Use an existing component or a plain Bootstrap pattern first.
+12. **Never edit `vendor/`.** Edit the package source; Solaris-Kit mirrors it into the sandbox.
+13. **Be factual and concise.** No flattery; correct the user with facts when needed.
+14. **Write code, comments, and documentation in English.**
 
-## Project code style
+## Code style
 
-These rules are the project-local copy of the global `code-style` contract. Apply them whenever
-writing, editing, or reviewing PHP, JavaScript, or TypeScript.
-
-### General comments
-
-- Do not add comments that restate the code.
-- Add an English explanatory comment only when the logic is genuinely too complex to be made
-  self-documenting through structure and naming.
-- Broader rationale and design decisions belong in documentation, not inline comments.
-
-### PHP
-
-- Indent with tabs at width 4; do not use spaces for indentation.
-- Put class and method opening braces on a new line.
-- Put control-structure opening braces on the same line.
-- Always put a block body on a new line and use braces, including for single-line blocks.
-- Name methods and variables in `camelCase`. An underscore separator is allowed for long, specific
-  names. Database tables and columns use `snake_case`.
-- Add native parameter and return types wherever possible. Declare every valid union member and use
-  `mixed` only for genuinely dynamic values.
-- Prefer guard clauses and early returns. Do not nest `if` branches when the flow can read from top
-  to bottom.
-- Never add PHPDoc to methods. Native parameter and return types must describe the contract.
-- Add a normal English comment only for genuinely complex logic that cannot explain itself.
-
-### JavaScript and TypeScript
-
-- Indent with tabs at width 4; do not use spaces for indentation.
-- Put opening braces on the same line. Always put a block body on a new line and use braces,
-  including for single-line blocks.
-- Name functions and variables in `camelCase`. An underscore separator is allowed for long,
-  specific names. JSON response keys use `snake_case`.
-- Prefer guard clauses and early returns; avoid nested `if` branches.
-- Every method and function must have English JSDoc with `@param` entries that declare parameter
-  types and an `@returns` entry that declares the return type. Do not add prose that merely restates
-  the method name or implementation.
-- In TypeScript, explicitly type every parameter and return value. Prefer interfaces for object
-  shapes, avoid `any`, and use `unknown` with narrowing for genuinely dynamic values.
-- Use Solaris' configured Axios module for HTTP requests; never use raw `fetch`.
-- Use the shared Helper `downloadFile(url, method, { headers, data })` API for file or blob downloads.
-  Inside the SolarPage family, access it through `this.helper.downloadFile(...)`; do not import Helper
-  again. Outside a Page, use the shared Helper according to that module's ownership contract.
-- In a request `catch`, show a manual error alert only when `!error?.response`; the Axios interceptor
-  already handles server responses.
-- Group related class methods with `#region` and `#endregion` when grouping improves navigation. Use
-  this order when applicable: Static, Lifecycle, Public API, then feature-specific regions.
+Follow [Code style](code-style.md) for all PHP, JavaScript, and TypeScript. It is the Solaris way
+and overrides any global, personal, or tool-default style.
 
 ## Checklist — adding a module to a package
 
@@ -96,6 +64,6 @@ writing, editing, or reviewing PHP, JavaScript, or TypeScript.
       resource path, `mobile.controllers`, `mobile.resources`, `api.controllers`
 - [ ] Menu seeder and permission seeder updated
 - [ ] Generator stub updated if a convention changed
-- [ ] `solaris config` run so the sandbox picks up the new config keys
-- [ ] `composer run test`, `analyse`, `format` all pass
+- [ ] `solaris sandbox config` run so the sandbox picks up the new config keys
+- [ ] `composer run test` and `composer run analyse` pass
 - [ ] Version bumped, `CHANGELOG.md` updated, breaking changes flagged

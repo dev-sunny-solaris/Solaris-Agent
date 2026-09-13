@@ -26,14 +26,14 @@ Define the reusable Page class in one module, then instantiate it from the Blade
 `resources/js/pages/account/page.js`:
 
 ```js
-import SolarEditPage from '@core-js/solaris/solar/solar-edit-page'
+import SolarEditPage from "@core-js/solaris/solar/solar-edit-page"
 
 export default class AccountEditPage extends SolarEditPage {
 	/**
 	 * @returns {void}
 	 */
 	init() {
-		this.status = this.form.get('status_id')
+		this.status = this.form.get("status_id")
 	}
 }
 ```
@@ -41,7 +41,7 @@ export default class AccountEditPage extends SolarEditPage {
 `resources/js/pages/account/page-index.js`:
 
 ```js
-import AccountEditPage from './page'
+import AccountEditPage from "./page"
 
 new AccountEditPage()
 ```
@@ -183,7 +183,7 @@ Use Form's mode methods if one Page instance deliberately switches records/modes
 
 ```js
 this.form.newMode()
-this.form.editMode({ type: 'PUT', id })
+this.form.editMode({ type: "PUT", id })
 this.id = id
 ```
 
@@ -224,8 +224,8 @@ Configure Form fields in `init()`:
  * @returns {void}
  */
 init() {
-	const account = this.form.get('account_id')
-	const contact = this.form.get('contact_id')
+	const account = this.form.get("account_id")
+	const contact = this.form.get("contact_id")
 
 	contact.init({
 		param: body => {
@@ -235,9 +235,9 @@ init() {
 		},
 	})
 
-	this.form.addValidation('contact_id', async value => ({
+	this.form.addValidation("contact_id", async value => ({
 		success: value !== null,
-		message: 'Contact is required',
+		message: "Contact is required",
 	}))
 }
 ```
@@ -294,14 +294,14 @@ Register detail definitions during `init()` so construction can occur immediatel
  * @returns {void}
  */
 init() {
-	this.registerDetail('contacts', ContactDetail, 'account_id')
+	this.registerDetail("contacts", ContactDetail, "account_id")
 }
 
 /**
  * @returns {void}
  */
 initDetail() {
-	this.contacts.on('saved', () => this.onContactSaved())
+	this.contacts.on("saved", () => this.onContactSaved())
 }
 ```
 

@@ -7,14 +7,14 @@ Package Pages separate reusable logic from execution:
 Reusable `page.js`:
 
 ```js
-import SolarEditPage from '@core-js/solaris/solar/solar-edit-page'
+import SolarEditPage from "@core-js/solaris/solar/solar-edit-page"
 
 export default class AccountPage extends SolarEditPage {
 	/**
 	 * @returns {void}
 	 */
 	init() {
-		this.name = this.form.get('name')
+		this.name = this.form.get("name")
 	}
 }
 ```
@@ -22,7 +22,7 @@ export default class AccountPage extends SolarEditPage {
 Executable `page-index.js`:
 
 ```js
-import AccountPage from './page'
+import AccountPage from "./page"
 
 new AccountPage()
 ```
@@ -37,24 +37,24 @@ If frontend logic needs a UUID belonging to a static, stable Lookup record, defi
 or application's `resources/js/const.js`. The frontend object drops the `Const` suffix:
 
 ```js
-const CaseStatus = {
-	New: '019b5a10-0000-7005-8000-000000000001',
-	InProgress: '019b5a10-0000-7005-8000-000000000002',
-	WaitingForResponse: '019b5a10-0000-7005-8000-000000000003',
-	Resolved: '019b5a10-0000-7005-8000-000000000004',
-	Closed: '019b5a10-0000-7005-8000-000000000005',
+const ReceiptStatus = {
+	New:                "019b5a10-0000-7005-8000-000000000001",
+	InProgress:         "019b5a10-0000-7005-8000-000000000002",
+	WaitingForApproval: "019b5a10-0000-7005-8000-000000000003",
+	Received:           "019b5a10-0000-7005-8000-000000000004",
+	Closed:             "019b5a10-0000-7005-8000-000000000005",
 }
 
-const ServiceAgreementStatus = {
-	Draft: '019b5a10-0000-7001-8000-000000000001',
-	Active: '019b5a10-0000-7001-8000-000000000002',
-	Completed: '019b5a10-0000-7001-8000-000000000003',
-	Canceled: '019b5a10-0000-7001-8000-000000000004',
+const SupplierContractStatus = {
+	Draft:     "019b5a10-0000-7001-8000-000000000001",
+	Active:    "019b5a10-0000-7001-8000-000000000002",
+	Completed: "019b5a10-0000-7001-8000-000000000003",
+	Canceled:  "019b5a10-0000-7001-8000-000000000004",
 }
 
 export {
-	CaseStatus,
-	ServiceAgreementStatus,
+	ReceiptStatus,
+	SupplierContractStatus,
 }
 ```
 
@@ -62,9 +62,9 @@ Import the named constant through the owning asset alias, then use its key inste
 UUID in Page or Component logic:
 
 ```js
-import { CaseStatus } from '@service-js/const'
+import { ReceiptStatus } from "@inventory-js/const"
 
-const isResolved = statusId === CaseStatus.Resolved
+const isReceived = statusId === ReceiptStatus.Received
 ```
 
 Keep the frontend object domain, keys, and UUID values synchronized with its backend Const class. Use

@@ -16,7 +16,7 @@ not only the input.
 ```
 
 ```js
-this.form.get('search').on('search', value => this.reload(value), 'SearchFilter')
+this.form.get("search").on("search", value => this.reload(value), "SearchFilter")
 ```
 
 Use `form.exclude('search')` when a Form-owned search must stay out of submit data. If `ignore` is

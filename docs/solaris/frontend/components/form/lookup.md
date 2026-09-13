@@ -111,7 +111,7 @@ Form:
 ```
 
 ```js
-const contact = this.form.get('contact_id')
+const contact = this.form.get("contact_id")
 
 contact.init()
 ```
@@ -120,18 +120,18 @@ Pass every custom filter or template through that first `init(config)` call. Imp
 an instance, and prefer its method-chaining API over the supported string DSL:
 
 ```js
-import Filter from '@core-js/solaris/filter/filter'
+import Filter from "@core-js/solaris/filter/filter"
 
-const account = this.form.get('account_id')
-const contact = this.form.get('contact_id')
+const account = this.form.get("account_id")
+const contact = this.form.get("contact_id")
 
 /**
  * @returns {{filter: Object[]}}
  */
 const resolveContactParam = () => {
 	const accountId = account.get()?.id
-	const filter = accountId
-		? new Filter().and('account_id', accountId)
+	const filter    = accountId
+		? new Filter().and("account_id", accountId)
 		: new Filter()
 
 	return { filter: filter.get() }
@@ -150,8 +150,8 @@ const renderOption = item => `<strong>${item.name}</strong>`
 const renderSelection = item => `<span>${item.name} · ${item.code ?? ''}</span>`
 
 contact.init({
-	param: resolveContactParam,
-	optionsTemplate: renderOption,
+	param:             resolveContactParam,
+	optionsTemplate:   renderOption,
 	selectionTemplate: renderSelection,
 })
 ```
@@ -181,9 +181,9 @@ Lookup object. Edit responses must therefore include display data, not only the 
 Lookup supports `change`, `search`, `open`, and `close`:
 
 ```js
-this.form.get('customer_id').on('change', value => {
-	this.form.set('contact_id', null, true)
-}, 'EditPage')
+this.form.get("customer_id").on("change", value => {
+	this.form.set("contact_id", null, true)
+}, "EditPage")
 ```
 
 Use named handlers. Use Component events instead of native DOM listeners when the event is exposed.

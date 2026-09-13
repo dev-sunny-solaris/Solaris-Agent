@@ -1,26 +1,20 @@
 # Solaris — Development Guide
 
-Instructions for AI coding agents working in Solaris package repositories and Laravel applications
-that consume Solaris. Rules differ by context; identify it before selecting files or conventions.
+Solaris is the engine behind Sunny App: pure Laravel with a Solaris-standard wrapper, not a new
+framework. Solaris Core is an all-in-one starter kit that anything can be built on. This bundle
+covers Core, package-level development, and projects that consume Solaris packages.
 
-Solaris is a Laravel package starter kit: a backend architecture plus a frontend UI system, shipped
-as layered Composer packages. It is not a new framework — it runs on Laravel and follows Laravel
-conventions.
+Applies to `solaris/solaris-laravel-core` below **2.0** (current: 1.6.6).
 
-## Compatibility
+## Start here
 
-This documentation bundle is validated and synchronized with the latest Solaris Laravel Core source:
+1. [Overview](docs/solaris/overview.md) — what Solaris is and what Core already provides.
+2. [Context](docs/solaris/context.md) — identify package, sandbox, or project level.
+3. [Package registry](docs/solaris/package-registry.md) — resolve owners and source paths.
+4. Package level only: [Solaris-Kit](docs/solaris/maintenance/workflow.md) — setup, sandbox,
+   composer, and config.
 
-| Package | Version | Last synchronized |
-|---|---:|---|
-| `solaris/solaris-laravel-core` | `1.6.5` | 2026-09-09 |
-
-Treat `1.6.5` as the latest validated Core contract for this bundle. When Core is upgraded, review
-breaking UI/runtime contracts and update this metadata together with the affected guides.
-
-**Read [Context](docs/solaris/context.md) first**, then
-[Package registry](docs/solaris/package-registry.md), to identify context and resolve package owners.
-Then read only the files this index points to for the work at hand. Documentation links are relative;
+Then read only the files the index points to for the task. Documentation links are relative;
 implementation paths are relative to their declared owner root.
 
 ## Non-negotiables
@@ -34,11 +28,24 @@ implementation paths are relative to their declared owner root.
 - **A package never runs alone.** Develop it inside a sandbox app via Solaris-Kit.
 - **Installed package source is read-only.** Project and sandbox work never modifies `vendor/`.
 
+## Safety fallbacks
+
+These apply unless the active agent's global rules say otherwise; those take precedence.
+
+- **Git is read-only.** Allowed: `status`, `log`, `diff`, `show`, `blame`, `branch --list`. Never
+  commit, push, or run any other Git write — including via alias, script, or `gh`. Never list the
+  agent as author or co-author.
+- **Never touch the database.** Do not connect to, query, or modify it. The database is the user's
+  domain.
+
+Full working rules: [Agent rules](docs/solaris/agent-rules.md).
+
 ## Index
 
 | File | Read it when |
 |---|---|
-| [Context](docs/solaris/context.md) | Always first — package, sandbox, or project |
+| [Overview](docs/solaris/overview.md) | Always first — what Solaris and Core provide |
+| [Context](docs/solaris/context.md) | Always — package, sandbox, or project |
 | [Package registry](docs/solaris/package-registry.md) | Always after context — owner and source resolution |
 | [Layering](docs/solaris/architecture/layering.md) | Deciding which package owns new code |
 | [Package anatomy](docs/solaris/architecture/package-anatomy.md) | Directory layout, provider, and asset aliases |
@@ -52,18 +59,21 @@ implementation paths are relative to their declared owner root.
 | [Database](docs/solaris/backend/database.md) | Writing migrations or seeders |
 | [Mobile API](docs/solaris/backend/mobile-api.md) | Exposing a module to the mobile app |
 | [Third-party API](docs/solaris/backend/third-party-api.md) | Exposing a module to partners |
-| [Workflow](docs/solaris/maintenance/workflow.md) | Running, testing, or installing through Solaris-Kit |
+| [Solaris-Kit](docs/solaris/maintenance/workflow.md) | Package-level daily work: sandbox, package composer, config merge, new package |
+| [Solaris-Kit setup guide](docs/solaris/maintenance/solaris-kit-setup.md) | Guiding a user to install, set up, or run the Kit and a sandbox |
 | [Release](docs/solaris/maintenance/release.md) | Package versioning and breaking changes |
-| [Agent rules](docs/solaris/agent-rules.md) | Working rules, project code style, and module checklist |
+| [Agent rules](docs/solaris/agent-rules.md) | Working rules and module checklist |
+| [Code style](docs/solaris/code-style.md) | Always when writing, editing, or reviewing PHP, JS, or TS |
 
 ## Minimum reading for common tasks
 
 | Task | Files |
 |---|---|
-| New module in a package | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Layering](docs/solaris/architecture/layering.md), [Config](docs/solaris/architecture/config-registry.md), [Gateways](docs/solaris/architecture/runtime-gateways.md), [PHP](docs/solaris/backend/php-standards.md), [Database](docs/solaris/backend/database.md), [Rules](docs/solaris/agent-rules.md) |
-| New reusable Blade/JS Component | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Rules](docs/solaris/agent-rules.md), [Anatomy](docs/solaris/architecture/package-anatomy.md), [Frontend](docs/solaris/frontend/README.md), then its selected Component guide |
-| New Page Blade or Page JS | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Rules](docs/solaris/agent-rules.md), [Anatomy](docs/solaris/architecture/package-anatomy.md), [Frontend](docs/solaris/frontend/README.md), then its selected Page guide |
+| New module in a package | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Layering](docs/solaris/architecture/layering.md), [Config](docs/solaris/architecture/config-registry.md), [Gateways](docs/solaris/architecture/runtime-gateways.md), [PHP](docs/solaris/backend/php-standards.md), [Database](docs/solaris/backend/database.md), [Rules](docs/solaris/agent-rules.md), [Code style](docs/solaris/code-style.md), [Kit](docs/solaris/maintenance/workflow.md) |
+| New reusable Blade/JS Component | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Rules](docs/solaris/agent-rules.md), [Code style](docs/solaris/code-style.md), [Anatomy](docs/solaris/architecture/package-anatomy.md), [Frontend](docs/solaris/frontend/README.md), then its selected Component guide |
+| New Page Blade or Page JS | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Rules](docs/solaris/agent-rules.md), [Code style](docs/solaris/code-style.md), [Anatomy](docs/solaris/architecture/package-anatomy.md), [Frontend](docs/solaris/frontend/README.md), then its selected Page guide |
 | Expose an existing module to mobile | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Config](docs/solaris/architecture/config-registry.md), [Mobile API](docs/solaris/backend/mobile-api.md) |
 | Expose an existing module to partner API | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Config](docs/solaris/architecture/config-registry.md), [Third-party API](docs/solaris/backend/third-party-api.md) |
 | Change a generated convention | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [PHP](docs/solaris/backend/php-standards.md), [Generators](docs/solaris/maintenance/generators-stubs.md), [Release](docs/solaris/maintenance/release.md) |
-| Set up or run package development | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Workflow](docs/solaris/maintenance/workflow.md) |
+| Set up or run package development | [Context](docs/solaris/context.md), [Registry](docs/solaris/package-registry.md), [Kit](docs/solaris/maintenance/workflow.md) |
+| Create a new package | [Overview](docs/solaris/overview.md), [Layering](docs/solaris/architecture/layering.md), [Anatomy](docs/solaris/architecture/package-anatomy.md), [Kit](docs/solaris/maintenance/workflow.md) |

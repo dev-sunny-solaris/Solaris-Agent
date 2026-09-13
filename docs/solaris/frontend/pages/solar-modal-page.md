@@ -10,7 +10,7 @@ SolarModalPage coordinates an existing ModalForm as a Page-level controller. Pas
 instance or the base modal ID; string lookup first resolves `<id>_ModalForm`.
 
 ```js
-import SolarModalPage from '@core-js/solaris/solar/solar-modal-page'
+import SolarModalPage from "@core-js/solaris/solar/solar-modal-page"
 
 export default class StatusModalPage extends SolarModalPage {
 	/**
@@ -18,7 +18,7 @@ export default class StatusModalPage extends SolarModalPage {
 	 * @returns {void}
 	 */
 	onNew(form) {
-		form.set('status_id', null, true)
+		form.set("status_id", null, true)
 	}
 }
 ```

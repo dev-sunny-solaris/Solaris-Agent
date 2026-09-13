@@ -31,7 +31,7 @@ The ID is the Page Blade ID:
 ```
 
 ```js
-new RoleListPage('role')
+new RoleListPage("role")
 ```
 
 Blade creates the primary Table as `<page-id>_list`. Construction resolves standard references,
@@ -88,7 +88,7 @@ finish registration before the final render:
 ```
 
 ```js
-new AccountListPage('account')
+new AccountListPage("account")
 ```
 
 Pass `false` as `autoRender` only when custom code deliberately owns the final call to
@@ -180,7 +180,7 @@ fields. `name` is the logical Table Column name—not necessarily its `data` pat
  * @returns {void}
  */
 init() {
-	this.columnRender('customer_id', (data, rowData) => {
+	this.columnRender("customer_id", (data, rowData) => {
 		return `<strong>${data ?? '-'}</strong><small>${rowData.customer?.code ?? ''}</small>`
 	})
 }
@@ -200,8 +200,8 @@ Use `columnCreated(name, callback)` only when behavior requires the completed ce
  * @returns {void}
  */
 init() {
-	this.columnCreated('status_id', (row, cell, cellData, rowData) => {
-		cell.querySelector('button')?.addEventListener('click', () => this.openStatus(rowData))
+	this.columnCreated("status_id", (row, cell, cellData, rowData) => {
+		cell.querySelector("button")?.addEventListener("click", () => this.openStatus(rowData))
 	})
 }
 ```
@@ -224,11 +224,11 @@ Add actions from `onActionCreated(row, cell, rowData)`.
  * @returns {void}
  */
 onActionCreated(row, cell, rowData) {
-	this.actionBefore(row, 'delete-action', {
-		selector: 'approve-action',
-		label: 'Approve',
-		icon: 'ri-check-line',
-		color: 'success',
+	this.actionBefore(row, "delete-action", {
+		selector: "approve-action",
+		label:    "Approve",
+		icon:     "ri-check-line",
+		color:    "success",
 		callback: () => this.approve(rowData.id),
 	})
 }
@@ -262,15 +262,15 @@ insert it as a sibling of `.button-action`:
  * @returns {void}
  */
 onActionCreated(row, cell, rowData) {
-	const standardActions = cell.querySelector('.button-action')
-	const customButton = this.createActivityButton(rowData)
+	const standardActions = cell.querySelector(".button-action")
+	const customButton    = this.createActivityButton(rowData)
 	if (!standardActions || !customButton) {
 		return
 	}
 
-	const wrapper = document.createElement('div')
+	const wrapper = document.createElement("div")
 
-	wrapper.className = 'd-flex justify-content-center align-items-center gap-1'
+	wrapper.className = "d-flex justify-content-center align-items-center gap-1"
 	wrapper.append(customButton, standardActions)
 	cell.replaceChildren(wrapper)
 }
